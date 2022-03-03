@@ -1,0 +1,1 @@
+IFS=$'\n' && export $(grep -v ^# /usr/src/env | xargs -0) && unset IFS

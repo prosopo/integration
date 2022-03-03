@@ -2,20 +2,14 @@ version: '3.4'
 services:
   provider-api:
     build:
-      context: ./provider
-      dockerfile: dev.dockerfile
+      context: .
+      dockerfile: ./docker/dev.dockerfile
     ports:
       - "3000:3000"
     volumes:
-      - ./provider/:/usr/src/app
-      - ./protocol/artifacts:/usr/src/app/artifacts
-      - ./redspot/:/usr/src/redspot
-      - ./data/:/usr/src/data
+      - .:/usr/src/
+
     environment:
-      - CONTRACT_ADDRESS
-      - DAPP_CONTRACT_ADDRESS
-      - PROVIDER_ADDRESS
-      - PROVIDER_MNEMONIC
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
     links:
