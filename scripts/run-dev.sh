@@ -20,7 +20,8 @@ docker compose up provider-api -d
 
 CONTAINER_NAME=$(docker ps -q -f name=provider-api)
 
-rm env
+# create an empty env file
+rm -f env
 touch env
 
 echo "Installing packages for redspot and building"
@@ -36,7 +37,7 @@ echo "Generating provider mnemonic"
 docker exec -it $CONTAINER_NAME zsh -c '/usr/src/docker/dev.dockerfile.generate.provider.mnemonic.sh /usr/src/protocol'
 
 echo "Sending funds to the Provider account and registering the provider"
-docker exec -it $CONTAINER_NAME zsh -c '/usr/src/docker/dev.dockerfile.set.env.variables.sh && cd /usr/src/provider && yarn && yarn build && yarn setup provider && yarn setup dapp'
+docker exec -it --env-file env $CONTAINER_NAME zsh -c 'printenv && cd /usr/src/provider && yarn && yarn build && yarn setup provider && yarn setup dapp'
 
 echo "Dev env up! You can now interact with the provider-api."
-docker exec -it --env-file ./env $CONTAINER_NAME zsh
+docker exec -it --env-file env $CONTAINER_NAME zsh

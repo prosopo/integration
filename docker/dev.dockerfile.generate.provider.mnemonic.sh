@@ -3,7 +3,7 @@
 IFS=$'
 '
 yarn
-{ PROVIDER_KEYRING=($(cd ./protocol && yarn mnemonic | tee /dev/fd/3 | grep ':' | awk -F ': ' '{print $2}' )); } 3>&1
+{ PROVIDER_KEYRING=($(cd /usr/src/protocol && yarn mnemonic | tee /dev/fd/3 | grep ':' | awk -F ': ' '{print $2}' )); } 3>&1
 
 export PROVIDER_ADDRESS=${PROVIDER_KEYRING[1]}
 export PROVIDER_MNEMONIC=${PROVIDER_KEYRING[2]}
@@ -20,5 +20,5 @@ if [[ $MNEMONIC_COUNT -ne 12 ]]; then
   exit 1
 else
   echo "PROVIDER_MNEMONIC set"
-  echo "PROVIDER_MNEMONIC=\"$PROVIDER_MNEMONIC\"" >> /usr/src/env
+  echo "PROVIDER_MNEMONIC=$PROVIDER_MNEMONIC" >> /usr/src/env
 fi
