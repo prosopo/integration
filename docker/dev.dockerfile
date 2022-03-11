@@ -10,7 +10,7 @@ RUN cp /home/root/binaryen/install/bin/* /usr/bin && cp /home/root/binaryen/inst
 RUN rm -rf /home/root/binaryen
 RUN apk add curl zsh
 USER root
-# RUN chmod +x /usr/src/docker/dev.dockerfile.generate.provider.mnemonic.sh
+RUN yarn set version stable
 ENV USER=node
 RUN mkdir -p /usr/src && chown -R $USER:$USER /usr/src
 USER $USER
@@ -24,5 +24,7 @@ RUN . ~/.cargo/env && \
     rustup target add wasm32-unknown-unknown --toolchain nightly && \
     rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-musl && \
     cargo install cargo-contract --vers ^0.16 --force --locked
-RUN yarn set version stable
+RUN touch /usr/src/provider/yarn.lock
+RUN touch /usr/src/protocol/yarn.lock
+RUN touch /usr/src/dapp-example/yarn.lock
 ENTRYPOINT ["tail", "-f", "/dev/null"]
