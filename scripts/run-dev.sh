@@ -35,9 +35,9 @@ for arg in "$@"; do
     shift # Remove --install from `$@`
     ;;
   --build-substrate)
-      BUILD_SUBSTATE=true
-      shift # Remove --build_substrate from `$@`
-      ;;
+    BUILD_SUBSTRATE=true
+    shift # Remove --build_substrate from `$@`
+    ;;
   --build-redspot)
     BUILD_REDSPOT=true
     shift # Remove --build_redspot from `$@`
@@ -75,7 +75,7 @@ if [[ $BUILD_SUBSTRATE == true ]]; then
   docker compose up substrate-node -d
 else
   docker compose up substrate-node -d --no-build
-fi;
+fi
 
 echo "Waiting for the substrate node to start up..."
 SUBSTRATE_CONTAINER_NAME=$(docker ps -q -f name=substrate-node)
