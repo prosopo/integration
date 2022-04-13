@@ -34,6 +34,10 @@ for arg in "$@"; do
     INSTALL_PACKAGES=true
     shift # Remove --install from `$@`
     ;;
+  --build-substrate)
+      BUILD_SUBSTATE=true
+      shift # Remove --build_substrate from `$@`
+      ;;
   --build-redspot)
     BUILD_REDSPOT=true
     shift # Remove --build_redspot from `$@`
@@ -67,7 +71,12 @@ touch .env
 sed -i -e "s/PROVIDER_MNEMONIC=\"*\([a-z ]*\)\"*/PROVIDER_MNEMONIC=\"\1\"/g" .env
 
 # spin up the substrate node
-docker compose up substrate-node -d
+if [[ $BUILD_SUBSTRATE == true ]]; then
+  docker compose up substrate-node -d
+else
+  docker compose up substrate-node -d --no-build
+fi;
+
 echo "Waiting for the substrate node to start up..."
 SUBSTRATE_CONTAINER_NAME=$(docker ps -q -f name=substrate-node)
 if [ -z "$SUBSTRATE_CONTAINER_NAME" ]; then

@@ -29,6 +29,7 @@ services:
     ports:
       - "27017:27017"
   substrate-node:
+    image: prosopo/substrate:monthly-2022-03
     build:
       context: ./docker/
       dockerfile: Substrate.dockerfile
