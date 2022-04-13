@@ -111,9 +111,6 @@ echo "BUILD_REDSPOT: $BUILD_REDSPOT"
 echo "DEPLOY_PROTOCOL: $DEPLOY_PROTOCOL"
 echo "DEPLOY_DAPP: $DEPLOY_DAPP"
 
-# make sure yarn is set to latest and workspace tools are installed
-docker exec -t "$CONTAINER_NAME" zsh -c "/usr/src/docker/dev.dockerfile.upgrade.yarn.sh"
-
 # must be first as it is a dependency
 if [[ $BUILD_REDSPOT == true ]]; then
   echo "Installing packages for redspot and building"
