@@ -30,6 +30,6 @@ RUN . ~/.cargo/env && \
     rustup target add wasm32-unknown-unknown --toolchain nightly && \
     rustup component add rust-src --toolchain nightly && \
     cargo install cargo-dylint dylint-link
-RUN . ~/.cargo/env && cargo install cargo-contract --vers ^0.17 --force
+RUN . ~/.cargo/env && cargo install cargo-contract --vers ^1.2.0 --force
 WORKDIR /usr/src
 ENTRYPOINT ["tail", "-f", "/dev/null"]
