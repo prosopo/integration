@@ -32,7 +32,8 @@ SUBSTRATE_CONTAINER_NAME=$(docker ps -q -f name=substrate-node)
 rm -rf ./.chain-test
 
 if [[ $TEST_DB == true ]]; then
-    docker cp $SUBSTRATE_CONTAINER_NAME:/chain-test/. ./.chain-test
+  docker cp $SUBSTRATE_CONTAINER_NAME:/chain-test/. ./.chain-test
 else 
-    docker cp $SUBSTRATE_CONTAINER_NAME:/chain-data/. ./.chain-test
+  cp .env .env.test
+  docker cp $SUBSTRATE_CONTAINER_NAME:/chain-data/. ./.chain-test
 fi
