@@ -1,0 +1,80 @@
+{
+  "name": "integration",
+  "version": "0.0.0",
+  "stableVersion": "0.0.0",
+  "author": "Prosopo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prosopo-io/integration.git"
+  },
+  "scripts": {
+    "build": "yarn workspace @prosopo/provider-core run build && yarn workspace @prosopo/contract run build",
+    "build:core": "yarn workspace @prosopo/provider-core run build",
+    "build:contract": "yarn workspace @prosopo/contract run build",
+    "setup": "yarn workspace @prosopo/provider-core run setup",
+    "start": "yarn workspace @prosopo/provider-core run start",
+    "fix-typescript-references": "utils-typescript-references",
+    "test": "yarn workspace @prosopo/provider-core run test",
+    "lint": "yarn workspace @prosopo/provider-core run eslint --fix src && yarn workspace @prosopo/contract run eslint --fix src"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=8.2.0"
+  },
+  "workspaces": [
+    "packages/provider",
+    "packages/procaptcha",
+    "protocol",
+    "dapp-example"
+  ],
+  "packageManager": "yarn@3.2.0",
+  "resolutions": {
+    "@polkadot/api": "7.12.1",
+    "@polkadot/api-contract": "7.12.1",
+    "@polkadot/api-derive": "7.12.1",
+    "@polkadot/api-augment": "7.12.1",
+    "@polkadot/apps-config": "0.109.1",
+    "@polkadot/keyring": "8.5.1",
+    "@polkadot/types": "7.12.1",
+    "@polkadot/networks": "8.5.1",
+    "@polkadot/util": "8.5.1",
+    "@polkadot/x-fetch": "8.5.1",
+    "@polkadot/x-global": "8.5.1",
+    "@polkadot/x-ws": "8.5.1",
+    "@polkadot/util-crypto": "8.5.1",
+    "rxjs": "7.5.5",
+    "bn.js": "4.12.0"
+  },
+  "devDependencies": {
+    "@goldstack/utils-typescript-references": "^0.1.5",
+    "@typescript-eslint/eslint-plugin": "^5.10.0",
+    "@typescript-eslint/parser": "^5.14.0",
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-header": "^3.1.1",
+    "eslint-plugin-import-newlines": "^1.2.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-react": "latest",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-sort-destructure-keys": "^1.4.0",
+    "ts-node": "^10.5.0",
+    "typescript": "^4.6.2"
+  },
+  "description": "Integrates protocol and provider for development purposes",
+  "bugs": {
+    "url": "https://github.com/prosopo-io/integration/issues"
+  },
+  "homepage": "https://github.com/prosopo-io/integration#readme",
+  "main": ".eslintrc.js",
+  "dependencies": {
+    "node-gyp": "^9.0.0",
+    "typescript": "4.6.3"
+  },
+  "keywords": [],
+  "license": "ISC"
+}

@@ -1,0 +1,77 @@
+{
+  "exclude": [
+    "build/**/*",
+    "**/build/**/*"
+  ],
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "commonjs",
+    "declaration": true,
+    "resolveJsonModule": true,
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "noImplicitThis": false,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "strict": false,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "noEmitOnError": true,
+    "baseUrl": ".",
+    "lib": ["esnext"],
+    "paths": {
+      "@prosopo/contract": [
+        "./packages/provider/packages/contract/src"
+      ],
+      "@prosopo/contract/*": [
+        "./packages/provider/packages/contract/src/*"
+      ],
+      "@prosopo/provider": [
+        "./packages/provider/packages/provider"
+      ],
+      "@prosopo/provider/*": [
+        "./packages/provider/packages/provider/*"
+      ],
+      "@prosopo/provider-core": [
+        "./packages/provider/packages/provider-core/src"
+      ],
+      "@prosopo/provider-core/*": [
+        "./packages/provider/packages/provider-core/src/*"
+      ],
+      "@prosopo/procaptcha": [
+        "./packages/provider/packages/procaptcha"
+      ],
+      "@prosopo/procaptcha/*": [
+        "./packages/provider/packages/procaptcha/*"
+      ],
+      "@prosopo/procaptcha-ui": [
+        "./packages/procaptcha/packages/procaptcha-ui/src"
+      ],
+      "@prosopo/procaptcha-ui/*": [
+        "./packages/procaptcha/packages/procaptcha-ui/src/*"
+      ]
+    }
+  },
+  "include": [
+    "./packages/**/**/*"
+  ],
+  "references": [
+    {
+      "path": "packages/procaptcha",
+      "name": "@prosopo/procaptcha"
+    },
+    {
+      "path": "packages/provider",
+      "name": "@prosopo/provider"
+    },
+    {
+      "path": "packages/provider/packages/contract",
+      "name": "@prosopo/contract"
+    },
+    {
+      "path": "packages/provider/packages/core",
+      "name": "@prosopo/provider-core"
+    }
+  ]
+}
