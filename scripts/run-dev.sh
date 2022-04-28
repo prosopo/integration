@@ -3,29 +3,36 @@
 function usage() {
   cat <<USAGE
 
-    Usage: $0 [--build-redspot]
+    Usage: $0 [--option]
 
     Options:
+        --install-packages:   install all yarn packages
         --build-redspot:      build the redspot library
+        --build-substrate:    rebuild the substrate image from scratch
         --build-provider:     build the provider library and setup dummy data
         --deploy-protocol:    deploy the prosopo protocol contract
         --deploy-dapp:        deploy the dapp-example contract
+        --restart-chain:      restart the substrate chain
+        --test-db:            start substrate container and the database container with test dbs
 USAGE
   exit 1
 }
 
 # if no arguments are provided, return usage function
-#if [ $# -eq 0 ]; then
-#    echo "Usage function"
-#    usage # run usage function
-#    exit 1
-#fi
+if [ $# -eq 0 ]; then
+    echo "Usage function"
+    usage # run usage function
+    exit 1
+fi
 
 INSTALL_PACKAGES=false
 BUILD_REDSPOT=false
+BUILD_SUBSTRATE=false
 BUILD_PROVIDER=false
 DEPLOY_PROTOCOL=false
 DEPLOY_DAPP=false
+RESTART_CHAIN=false
+TEST_DB=false
 
 for arg in "$@"; do
   echo "$arg"
@@ -37,6 +44,10 @@ for arg in "$@"; do
   --build-substrate)
     BUILD_SUBSTRATE=true
     shift # Remove --build_substrate from `$@`
+    ;;
+  --restart-chain)
+    RESTART_CHAIN=true
+    shift # Remove --restart-chain from `$@`
     ;;
   --build-redspot)
     BUILD_REDSPOT=true
@@ -54,6 +65,10 @@ for arg in "$@"; do
     DEPLOY_DAPP=true
     shift # Remove --deploy_dapp from `$@`
     ;;
+  --test-db)
+    TEST_DB=true
+    shift # Remove --test-db from `$@`
+    ;;
   -h | --help)
     usage # run usage function on help
     ;;
@@ -63,12 +78,18 @@ for arg in "$@"; do
   esac
 done
 
+if [[ $TEST_DB ]]; then
+  ENV_FILE=.env.test
+else
+  ENV_FILE=.env
+fi
+
 # create an empty .env file
-touch .env
+touch $ENV_FILE
 
 # Docker compose doesn't like .env variables that contain spaces and are not quoted
 # https://stackoverflow.com/questions/69512549/key-cannot-contain-a-space-error-while-running-docker-compose
-sed -i -e "s/PROVIDER_MNEMONIC=\"*\([a-z ]*\)\"*/PROVIDER_MNEMONIC=\"\1\"/g" .env
+sed -i -e "s/PROVIDER_MNEMONIC=\"*\([a-z ]*\)\"*/PROVIDER_MNEMONIC=\"\1\"/g" $ENV_FILE
 
 # spin up the substrate node
 if [[ $BUILD_SUBSTRATE == true ]]; then
@@ -78,13 +99,26 @@ else
 fi
 
 # start the substrate process as a background task
-./scripts/start-substrate.sh
+START_SUBSTRATE_ARGS=( )
+if [[ $RESTART_CHAIN ]]; then
+  START_SUBSTRATE_ARGS+=( --restart-chain )
+fi
+if [[ $TEST_DB ]]; then
+  START_SUBSTRATE_ARGS+=( --test-db )
+fi
+./scripts/start-substrate.sh "${START_SUBSTRATE_ARGS[@]}"
 
-docker compose up mongodb -d
+# start the database container
+if [[ $TEST_DB ]]; then
+  ./scripts/start-db.sh --test-db
+else
+  ./scripts/start-db.sh
+fi
+
 docker compose up provider-api -d
 
 # return .env to its original state
-sed -i -e 's/PROVIDER_MNEMONIC="\([a-z ]*\)"/PROVIDER_MNEMONIC=\1/g' .env
+sed -i -e 's/PROVIDER_MNEMONIC="\([a-z ]*\)"/PROVIDER_MNEMONIC=\1/g' $ENV_FILE
 
 CONTAINER_NAME=$(docker ps -q -f name=provider-api)
 
@@ -122,8 +156,8 @@ if [[ $BUILD_PROVIDER == true ]]; then
   echo "Generating provider mnemonic"
   docker exec -it "$CONTAINER_NAME" zsh -c '/usr/src/docker/dev.dockerfile.generate.provider.mnemonic.sh /usr/src/protocol'
   echo "Sending funds to the Provider account and registering the provider"
-  docker exec -it --env-file .env "$CONTAINER_NAME" zsh -c 'yarn && yarn build && cd /usr/src/packages/provider/packages/core && yarn setup provider && yarn setup dapp'
+  docker exec -it --env-file $ENV_FILE "$CONTAINER_NAME" zsh -c 'yarn && yarn build && cd /usr/src/packages/provider/packages/core && yarn setup provider && yarn setup dapp'
 fi
 
 echo "Dev env up! You can now interact with the provider-api."
-docker exec -it --env-file .env "$CONTAINER_NAME" zsh
+docker exec -it --env-file $ENV_FILE "$CONTAINER_NAME" zsh

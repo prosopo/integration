@@ -54,7 +54,8 @@
     }
   },
   "include": [
-    "./packages/**/**/*"
+    "./packages/**/**/*",
+    "packages/procaptcha/types.d.ts"
   ],
   "references": [
     {
