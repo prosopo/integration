@@ -18,13 +18,6 @@ USAGE
   exit 1
 }
 
-# if no arguments are provided, return usage function
-if [ $# -eq 0 ]; then
-    echo "Usage function"
-    usage # run usage function
-    exit 1
-fi
-
 INSTALL_PACKAGES=false
 BUILD_REDSPOT=false
 BUILD_SUBSTRATE=false
@@ -78,11 +71,21 @@ for arg in "$@"; do
   esac
 done
 
-if [[ $TEST_DB ]]; then
+echo "INSTALL_PACKAGES: $INSTALL_PACKAGES"
+echo "BUILD_PROVIDER: $BUILD_PROVIDER"
+echo "BUILD_REDSPOT: $BUILD_REDSPOT"
+echo "DEPLOY_PROTOCOL: $DEPLOY_PROTOCOL"
+echo "DEPLOY_DAPP: $DEPLOY_DAPP"
+echo "TEST_DB: $TEST_DB"
+echo "RESTART_CHAIN: $RESTART_CHAIN"
+
+if [[ $TEST_DB == true ]]; then
   ENV_FILE=.env.test
 else
   ENV_FILE=.env
 fi
+
+echo "ENV_FILE: $ENV_FILE"
 
 # create an empty .env file
 touch $ENV_FILE
@@ -100,16 +103,16 @@ fi
 
 # start the substrate process as a background task
 START_SUBSTRATE_ARGS=( )
-if [[ $RESTART_CHAIN ]]; then
+if [[ $RESTART_CHAIN == true ]]; then
   START_SUBSTRATE_ARGS+=( --restart-chain )
 fi
-if [[ $TEST_DB ]]; then
+if [[ $TEST_DB == true ]]; then
   START_SUBSTRATE_ARGS+=( --test-db )
 fi
 ./scripts/start-substrate.sh "${START_SUBSTRATE_ARGS[@]}"
 
 # start the database container
-if [[ $TEST_DB ]]; then
+if [[ $TEST_DB == true ]]; then
   ./scripts/start-db.sh --test-db
 else
   ./scripts/start-db.sh
@@ -121,12 +124,6 @@ docker compose up provider-api -d
 sed -i -e 's/PROVIDER_MNEMONIC="\([a-z ]*\)"/PROVIDER_MNEMONIC=\1/g' $ENV_FILE
 
 CONTAINER_NAME=$(docker ps -q -f name=provider-api)
-
-echo "INSTALL_PACKAGES: $INSTALL_PACKAGES"
-echo "BUILD_PROVIDER: $BUILD_PROVIDER"
-echo "BUILD_REDSPOT: $BUILD_REDSPOT"
-echo "DEPLOY_PROTOCOL: $DEPLOY_PROTOCOL"
-echo "DEPLOY_DAPP: $DEPLOY_DAPP"
 
 # must be first as it is a dependency
 if [[ $BUILD_REDSPOT == true ]]; then

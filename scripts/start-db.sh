@@ -34,7 +34,7 @@ DB_CONTAINER_NAME=$(docker ps -q -f name=provider-db)
 
 # load a fresh test db
 if [[ $TEST_DB == true ]]; then
-  # drop the db
+  # drop the test db
   docker exec --env-file .env.test "$DB_CONTAINER_NAME" bash -c 'echo "Dropping $MONGO_INITDB_DATABASE" && mongo $MONGO_INITDB_DATABASE -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval "db.dropDatabase()"'
   # copy the test db to the container
   docker cp ./.db-test/. "$DB_CONTAINER_NAME":/db-test
