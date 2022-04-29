@@ -3,20 +3,26 @@
 function usage() {
   cat <<USAGE
 
-    Usage: $0 [--test-db]
+    Usage: $0 [--test-db --restart-chain]
 
     Options:
-        --test-db:      use test db
+        --test-db:                use test db
+        --restart-chain:      restart the substrate node
 USAGE
   exit 1
 }
 
 TEST_DB=false
+RESTART_CHAIN=false
 
 for arg in "$@"; do
   case $arg in
   --test-db)
     TEST_DB=true
+    shift # Remove --install from `$@`
+    ;;
+  --restart-chain)
+    RESTART_CHAIN=true
     shift # Remove --install from `$@`
     ;;
   -h | --help)
@@ -36,7 +42,7 @@ if [ -z "$SUBSTRATE_CONTAINER_NAME" ]; then
 fi
 
 SUBSTRATE_PID=$(docker exec $SUBSTRATE_CONTAINER_NAME sh -c "ps aux | grep -v grep | grep substrate-contracts-node | awk '{print \$2}'")
-if [ -n "$SUBSTRATE_PID" ]; then
+if [[ $TEST_DB == true ]] || ( [ -n "$SUBSTRATE_PID" ] && [ $RESTART_CHAIN == true ] ); then
   echo "Killing existing substrate..."
   docker exec $SUBSTRATE_CONTAINER_NAME kill -9 $SUBSTRATE_PID
 fi

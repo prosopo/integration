@@ -12,20 +12,21 @@ services:
         target: /usr/src/
 
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     links:
       - substrate-node
-      - mongodb
+      - provider-db
     extra_hosts:
       - "host.docker.internal:host-gateway"
-  mongodb:
-    image: mongo:5.0.4
+  provider-db:
+    image: ${DATABASE_IMAGE}
     volumes:
-      - ./mongodb/:/data/db
+      - ./db/:/data/db
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
     ports:
       - "27017:27017"
   substrate-node:
