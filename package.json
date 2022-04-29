@@ -16,7 +16,8 @@
     "fix-typescript-references": "utils-typescript-references",
     "test": "yarn workspace @prosopo/provider-core run test",
     "test:mock": "./scripts/test.sh",
-    "lint": "yarn workspace @prosopo/provider-core run eslint --fix src && yarn workspace @prosopo/contract run eslint --fix src"
+    "lint": "yarn workspace @prosopo/provider-core run eslint --fix src && yarn workspace @prosopo/contract run eslint --fix src",
+    "populate-data": "yarn workspace @prosopo/provider-core run populate-data"
   },
   "private": true,
   "engines": {
