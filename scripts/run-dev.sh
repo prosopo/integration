@@ -7,7 +7,6 @@ function usage() {
 
     Options:
         --install-packages:   install all yarn packages
-        --build-redspot:      build the redspot library
         --build-substrate:    rebuild the substrate image from scratch
         --build-provider:     build the provider library and setup dummy data
         --deploy-protocol:    deploy the prosopo protocol contract
@@ -19,7 +18,6 @@ USAGE
 }
 
 INSTALL_PACKAGES=false
-BUILD_REDSPOT=false
 BUILD_SUBSTRATE=false
 BUILD_PROVIDER=false
 DEPLOY_PROTOCOL=false
@@ -41,10 +39,6 @@ for arg in "$@"; do
   --restart-chain)
     RESTART_CHAIN=true
     shift # Remove --restart-chain from `$@`
-    ;;
-  --build-redspot)
-    BUILD_REDSPOT=true
-    shift # Remove --build_redspot from `$@`
     ;;
   --build-provider)
     BUILD_PROVIDER=true
@@ -79,7 +73,6 @@ fi
 
 echo "INSTALL_PACKAGES: $INSTALL_PACKAGES"
 echo "BUILD_PROVIDER:   $BUILD_PROVIDER"
-echo "BUILD_REDSPOT:    $BUILD_REDSPOT"
 echo "DEPLOY_PROTOCOL:  $DEPLOY_PROTOCOL"
 echo "DEPLOY_DAPP:      $DEPLOY_DAPP"
 echo "TEST_DB:          $TEST_DB"
@@ -123,12 +116,6 @@ docker compose up provider-api -d
 sed -i -e 's/PROVIDER_MNEMONIC="\([a-z ]*\)"/PROVIDER_MNEMONIC=\1/g' $ENV_FILE
 
 CONTAINER_NAME=$(docker ps -q -f name=provider-api)
-
-# must be first as it is a dependency
-if [[ $BUILD_REDSPOT == true ]]; then
-  echo "Installing packages for redspot and building"
-  docker exec -t "$CONTAINER_NAME" zsh -c 'cd /usr/src/redspot && yarn && yarn build'
-fi
 
 if [[ $INSTALL_PACKAGES == true ]]; then
   docker exec -t "$CONTAINER_NAME" zsh -c 'cd /usr/src && yarn'

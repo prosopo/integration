@@ -3095,7 +3095,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/rpc-provider@npm:^7.15.1":
+"@polkadot/rpc-provider@npm:^7.15.1, @polkadot/rpc-provider@npm:^7.7.1":
   version: 7.15.1
   resolution: "@polkadot/rpc-provider@npm:7.15.1"
   dependencies:
@@ -3513,13 +3513,13 @@ __metadata:
     "@emotion/styled": ^11.8.1
     "@mui/material": ^5.4.4
     "@mui/styles": ^5.4.4
-    "@polkadot/api": 7.12.1
-    "@polkadot/api-contract": 7.12.1
+    "@polkadot/api": ^7.7.1
+    "@polkadot/api-contract": ^7.7.1
     "@polkadot/extension-dapp": ^0.42.7
-    "@polkadot/rpc-provider": 7.12.1
+    "@polkadot/rpc-provider": ^7.7.1
     "@polkadot/ui-keyring": ^1.0.1
-    "@polkadot/util": 8.5.1
-    "@polkadot/util-crypto": 8.5.1
+    "@polkadot/util": ^9.0.1
+    "@polkadot/util-crypto": ^9.0.1
     "@prosopo/contract": 0.0.0
     "@prosopo/provider-core": 0.0.0
     "@testing-library/jest-dom": ^5.14.1
