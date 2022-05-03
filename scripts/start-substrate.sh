@@ -42,20 +42,28 @@ if [ -z "$SUBSTRATE_CONTAINER_NAME" ]; then
 fi
 
 SUBSTRATE_PID=$(docker exec $SUBSTRATE_CONTAINER_NAME sh -c "ps aux | grep -v grep | grep substrate-contracts-node | awk '{print \$2}'")
-if [[ $TEST_DB == true ]] || ( [ -n "$SUBSTRATE_PID" ] && [ $RESTART_CHAIN == true ] ); then
+if [[ $TEST_DB == true ]]; then
   echo "Killing existing substrate..."
-  docker exec $SUBSTRATE_CONTAINER_NAME kill -9 $SUBSTRATE_PID
+  docker exec "$SUBSTRATE_CONTAINER_NAME" kill -9 "$SUBSTRATE_PID"
 fi
+
+# restart chain with no data
+if [[ $RESTART_CHAIN == true ]]; then
+  if [[ -n "$SUBSTRATE_PID" ]]; then
+    echo "Killing existing substrate..."
+    docker exec "$SUBSTRATE_CONTAINER_NAME" kill -9 "$SUBSTRATE_PID"
+  fi;
+  docker exec -d "$SUBSTRATE_CONTAINER_NAME" rm -rf ./chain-data
+fi;
 
 # switch db
 if [[ $TEST_DB == true ]]; then
-  docker exec -d $SUBSTRATE_CONTAINER_NAME rm -rf ./chain-test
-  docker cp ./.chain-test/. $SUBSTRATE_CONTAINER_NAME:/chain-test
-  docker exec -d $SUBSTRATE_CONTAINER_NAME substrate-contracts-node --dev -d ./chain-test --unsafe-ws-external --rpc-external --prometheus-external -linfo,runtime::contracts=debug
+  docker exec -d "$SUBSTRATE_CONTAINER_NAME" rm -rf ./chain-test
+  docker cp ./.chain-test/. "$SUBSTRATE_CONTAINER_NAME":/chain-test
+  docker exec -d "$SUBSTRATE_CONTAINER_NAME" substrate-contracts-node --dev -d ./chain-test --unsafe-ws-external --rpc-external --prometheus-external -linfo,runtime::contracts=debug
 else
-  docker exec -d $SUBSTRATE_CONTAINER_NAME substrate-contracts-node --dev -d ./chain-data --unsafe-ws-external --rpc-external --prometheus-external -linfo,runtime::contracts=debug
+  docker exec -d "$SUBSTRATE_CONTAINER_NAME" substrate-contracts-node --dev -d ./chain-data --unsafe-ws-external --rpc-external --prometheus-external -linfo,runtime::contracts=debug
 fi
-
 
 # Mac OSX cannot curl docker container https://stackoverflow.com/a/45390994/1178971
 if [[ "$OSTYPE" == "darwin"* ]]; then

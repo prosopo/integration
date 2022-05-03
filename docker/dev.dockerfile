@@ -28,6 +28,7 @@ RUN rustup default stable && \
     rustup target add wasm32-unknown-unknown --toolchain nightly && \
     rustup component add rust-src --toolchain nightly && \
     cargo install cargo-dylint dylint-link && \
-    cargo install cargo-contract --vers ^1.2.0 --force
+    cargo install cargo-contract --vers ^1.2.0 --force && \
+    cargo install cargo-tarpaulin
 WORKDIR /usr/src
 ENTRYPOINT ["tail", "-f", "/dev/null"]

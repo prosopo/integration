@@ -71,21 +71,20 @@ for arg in "$@"; do
   esac
 done
 
-echo "INSTALL_PACKAGES: $INSTALL_PACKAGES"
-echo "BUILD_PROVIDER: $BUILD_PROVIDER"
-echo "BUILD_REDSPOT: $BUILD_REDSPOT"
-echo "DEPLOY_PROTOCOL: $DEPLOY_PROTOCOL"
-echo "DEPLOY_DAPP: $DEPLOY_DAPP"
-echo "TEST_DB: $TEST_DB"
-echo "RESTART_CHAIN: $RESTART_CHAIN"
-
 if [[ $TEST_DB == true ]]; then
   ENV_FILE=.env.test
 else
   ENV_FILE=.env
 fi
 
-echo "ENV_FILE: $ENV_FILE"
+echo "INSTALL_PACKAGES: $INSTALL_PACKAGES"
+echo "BUILD_PROVIDER:   $BUILD_PROVIDER"
+echo "BUILD_REDSPOT:    $BUILD_REDSPOT"
+echo "DEPLOY_PROTOCOL:  $DEPLOY_PROTOCOL"
+echo "DEPLOY_DAPP:      $DEPLOY_DAPP"
+echo "TEST_DB:          $TEST_DB"
+echo "RESTART_CHAIN:    $RESTART_CHAIN"
+echo "ENV_FILE:         $ENV_FILE"
 
 # create an empty .env file
 touch $ENV_FILE
