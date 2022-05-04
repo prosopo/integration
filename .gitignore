@@ -123,3 +123,5 @@ contracts/target/
 
 /db/
 /data/
+
+/yarn.lock

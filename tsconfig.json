@@ -39,12 +39,15 @@
       ],
       "@prosopo/procaptcha/*": [
         "./packages/procaptcha/src/*"
+<<<<<<< HEAD
       ],
       "@prosopo/procaptcha-react": [
         "./packages/procaptcha/src"
       ],
       "@prosopo/procaptcha-react/*": [
         "./packages/procaptcha-react/src/*"
+=======
+>>>>>>> 5e10ef21382a46be775262e32ba084afc5f03082
       ]
     }
   },
@@ -59,6 +62,7 @@
     {
       "path": "packages/contract",
       "name": "@prosopo/contract"
+<<<<<<< HEAD
     },
     {
       "path": "packages/procaptcha",
@@ -67,6 +71,8 @@
     {
       "path": "packages/procaptcha-react",
       "name": "@prosopo/procaptcha-react"
+=======
+>>>>>>> 5e10ef21382a46be775262e32ba084afc5f03082
     }
   ]
 }
