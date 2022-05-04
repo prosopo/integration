@@ -18,3 +18,7 @@
 	path = packages/provider
 	url = git@github.com:prosopo-io/provider.git
     branch = master
+[submodule "packages/contract"]
+	path = packages/contract
+	url = git@github.com:prosopo-io/contract.git
+    branch = master
