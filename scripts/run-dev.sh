@@ -135,6 +135,9 @@ echo "Linking artifacts to core package and contract package"
 docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/provider/artifacts'
 docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/contract/artifacts'
 
+echo "Copy protocol/artifacts/prosopo.json to procaptcha/abi/prosopo.json"
+docker exec -it "$CONTAINER_NAME" zsh -c 'cp -f /usr/src/protocol/artifacts/prosopo.json /usr/src/packages/procaptcha/src/abi/prosopo.json'
+
 if [[ $BUILD_PROVIDER == true ]]; then
   echo "Generating provider mnemonic"
   docker exec -it "$CONTAINER_NAME" zsh -c '/usr/src/docker/dev.dockerfile.generate.provider.mnemonic.sh /usr/src/protocol'
