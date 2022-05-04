@@ -8,26 +8,31 @@
     "url": "git+https://github.com/prosopo-io/integration.git"
   },
   "scripts": {
-    "build": "yarn workspace @prosopo/provider-core run build && yarn workspace @prosopo/contract run build",
-    "build:core": "yarn workspace @prosopo/provider-core run build",
+    "build": "yarn workspace @prosopo/provider run build && yarn workspace @prosopo/contract run build",
+    "build:core": "yarn workspace @prosopo/provider run build",
     "build:contract": "yarn workspace @prosopo/contract run build",
-    "setup": "yarn workspace @prosopo/provider-core run setup",
-    "start": "yarn workspace @prosopo/provider-core run start",
+    "setup": "yarn workspace @prosopo/provider run setup",
+    "start": "yarn workspace @prosopo/provider run start",
     "fix-typescript-references": "utils-typescript-references",
-    "test": "yarn workspace @prosopo/provider-core run test",
+    "test": "yarn workspace @prosopo/provider run test",
     "test:mock": "./scripts/test.sh",
-    "lint": "yarn workspace @prosopo/provider-core run eslint --fix src && yarn workspace @prosopo/contract run eslint --fix src",
-    "populate-data": "yarn workspace @prosopo/provider-core run populate-data"
+    "lint": "yarn workspace @prosopo/provider run eslint --fix src && yarn workspace @prosopo/contract run eslint --fix src",
+    "populate-data": "yarn workspace @prosopo/provider run populate-data",
+    "git-sync": "git submodule foreach -q --recursive 'git switch $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo master)'"
   },
   "private": true,
   "engines": {
     "node": ">=8.2.0"
   },
   "workspaces": [
+    "protocol",
+    "dapp-example",
+    "client-example",
+    "packages/contract",
     "packages/provider",
     "packages/procaptcha",
-    "protocol",
-    "dapp-example"
+    "packages/procaptcha-react",
+    "packages/types"
   ],
   "packageManager": "yarn@3.2.0",
   "resolutions": {
@@ -64,8 +69,9 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "eslint-plugin-sort-destructure-keys": "^1.4.0",
+    "node-gyp": "^9.0.0",
     "ts-node": "^10.5.0",
-    "typescript": "^4.6.2"
+    "typescript": "^4.6.3"
   },
   "description": "Integrates protocol and provider for development purposes",
   "bugs": {
@@ -73,10 +79,6 @@
   },
   "homepage": "https://github.com/prosopo-io/integration#readme",
   "main": ".eslintrc.js",
-  "dependencies": {
-    "node-gyp": "^9.0.0",
-    "typescript": "4.6.3"
-  },
   "keywords": [],
   "license": "ISC"
 }

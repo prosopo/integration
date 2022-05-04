@@ -22,34 +22,22 @@
     "lib": ["esnext"],
     "paths": {
       "@prosopo/contract": [
-        "./packages/provider/packages/contract/src"
+        "./packages/contract/src"
       ],
       "@prosopo/contract/*": [
-        "./packages/provider/packages/contract/src/*"
+        "./packages/contract/src/*"
       ],
       "@prosopo/provider": [
-        "./packages/provider/packages/provider"
+        "./packages/provider/src"
       ],
       "@prosopo/provider/*": [
-        "./packages/provider/packages/provider/*"
-      ],
-      "@prosopo/provider-core": [
-        "./packages/provider/packages/provider-core/src"
-      ],
-      "@prosopo/provider-core/*": [
-        "./packages/provider/packages/provider-core/src/*"
+        "./packages/provider/src/*"
       ],
       "@prosopo/procaptcha": [
-        "./packages/provider/packages/procaptcha"
+        "./packages/procaptcha/src"
       ],
       "@prosopo/procaptcha/*": [
-        "./packages/provider/packages/procaptcha/*"
-      ],
-      "@prosopo/procaptcha-ui": [
-        "./packages/procaptcha/packages/procaptcha-ui/src"
-      ],
-      "@prosopo/procaptcha-ui/*": [
-        "./packages/procaptcha/packages/procaptcha-ui/src/*"
+        "./packages/procaptcha/src/*"
       ]
     }
   },
@@ -67,12 +55,8 @@
       "name": "@prosopo/provider"
     },
     {
-      "path": "packages/provider/packages/contract",
+      "path": "packages/contract",
       "name": "@prosopo/contract"
-    },
-    {
-      "path": "packages/provider/packages/core",
-      "name": "@prosopo/provider-core"
     }
   ]
 }

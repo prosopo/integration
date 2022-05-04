@@ -132,14 +132,17 @@ if [[ $DEPLOY_DAPP == true ]]; then
 fi
 
 echo "Linking artifacts to core package and contract package"
-docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/provider/packages/core/artifacts'
-docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/provider/packages/contract/artifacts'
+docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/provider/artifacts'
+docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/contract/artifacts'
+
+echo "Copy protocol/artifacts/prosopo.json to procaptcha/abi/prosopo.json"
+docker exec -it "$CONTAINER_NAME" zsh -c 'cp -f /usr/src/protocol/artifacts/prosopo.json /usr/src/packages/procaptcha/src/abi/prosopo.json'
 
 if [[ $BUILD_PROVIDER == true ]]; then
   echo "Generating provider mnemonic"
   docker exec -it "$CONTAINER_NAME" zsh -c '/usr/src/docker/dev.dockerfile.generate.provider.mnemonic.sh /usr/src/protocol'
   echo "Sending funds to the Provider account and registering the provider"
-  docker exec -it --env-file $ENV_FILE "$CONTAINER_NAME" zsh -c 'yarn && yarn build && cd /usr/src/packages/provider/packages/core && yarn setup provider && yarn setup dapp'
+  docker exec -it --env-file $ENV_FILE "$CONTAINER_NAME" zsh -c 'yarn && yarn build && cd /usr/src/packages/provider && yarn setup provider && yarn setup dapp'
 fi
 
 echo "Dev env up! You can now interact with the provider-api."
