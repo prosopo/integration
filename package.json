@@ -17,7 +17,8 @@
     "test": "yarn workspace @prosopo/provider run test",
     "test:mock": "./scripts/test.sh",
     "lint": "yarn workspace @prosopo/provider run eslint --fix src && yarn workspace @prosopo/contract run eslint --fix src",
-    "populate-data": "yarn workspace @prosopo/provider run populate-data"
+    "populate-data": "yarn workspace @prosopo/provider run populate-data",
+    "git-sync": "git submodule foreach -q --recursive 'git switch $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo master)'"
   },
   "private": true,
   "engines": {
