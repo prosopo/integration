@@ -22,3 +22,9 @@
 	path = packages/contract
 	url = git@github.com:prosopo-io/contract.git
     branch = main
+[submodule "packages/procaptcha-react"]
+	path = packages/procaptcha-react
+	url = git@github.com:prosopo-io/procaptcha-react.git
+[submodule "client-example"]
+	path = client-example
+	url = git@github.com:prosopo-io/client-example.git

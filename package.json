@@ -27,12 +27,12 @@
   "workspaces": [
     "protocol",
     "dapp-example",
-    "react-example",
-    "packages/types",
+    "client-example",
     "packages/contract",
     "packages/provider",
     "packages/procaptcha",
-    "packages/procaptcha-react"
+    "packages/procaptcha-react",
+    "packages/types"
   ],
   "packageManager": "yarn@3.2.0",
   "resolutions": {
