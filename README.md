@@ -60,7 +60,7 @@ Now you can interact with the provider CLI, start the API server, or run the tes
 The provider tests can now be run from inside the container using
 
 ```bash
-cd ./packages/provider/packages/core && yarn test
+cd ./packages/provider && yarn test
 ```
 
 ## Command Line Interface
@@ -68,7 +68,7 @@ cd ./packages/provider/packages/core && yarn test
 First, `cd` into the `core` package.
 
 ```bash
-cd ./packages/provider/packages/core
+cd ./packages/provider
 ```
 
 Then you will be able to run the following commands.

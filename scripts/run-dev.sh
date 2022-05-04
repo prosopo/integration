@@ -132,8 +132,8 @@ if [[ $DEPLOY_DAPP == true ]]; then
 fi
 
 echo "Linking artifacts to core package and contract package"
-docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/provider/packages/core/artifacts'
-docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/provider/packages/contract/artifacts'
+docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/provider/artifacts'
+docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/contract/artifacts'
 
 if [[ $BUILD_PROVIDER == true ]]; then
   echo "Generating provider mnemonic"
