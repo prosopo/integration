@@ -9,7 +9,7 @@
 [submodule "packages/procaptcha"]
 	path = packages/procaptcha
 	url = git@github.com:prosopo-io/procaptcha.git
-    branch = master
+    branch = main
 [submodule "redspot"]
 	path = redspot
 	url = git@github.com:prosopo-io/redspot.git
@@ -21,4 +21,4 @@
 [submodule "packages/contract"]
 	path = packages/contract
 	url = git@github.com:prosopo-io/contract.git
-    branch = master
+    branch = main
