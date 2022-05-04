@@ -8,24 +8,30 @@
     "url": "git+https://github.com/prosopo-io/integration.git"
   },
   "scripts": {
-    "build": "yarn workspace @prosopo/provider-core run build && yarn workspace @prosopo/contract run build",
-    "build:core": "yarn workspace @prosopo/provider-core run build",
+    "build": "yarn workspace @prosopo/provider run build && yarn workspace @prosopo/contract run build",
+    "build:core": "yarn workspace @prosopo/provider run build",
     "build:contract": "yarn workspace @prosopo/contract run build",
-    "setup": "yarn workspace @prosopo/provider-core run setup",
-    "start": "yarn workspace @prosopo/provider-core run start",
+    "setup": "yarn workspace @prosopo/provider run setup",
+    "start": "yarn workspace @prosopo/provider run start",
     "fix-typescript-references": "utils-typescript-references",
-    "test": "yarn workspace @prosopo/provider-core run test",
-    "lint": "yarn workspace @prosopo/provider-core run eslint --fix src && yarn workspace @prosopo/contract run eslint --fix src"
+    "test": "yarn workspace @prosopo/provider run test",
+    "test:mock": "./scripts/test.sh",
+    "lint": "yarn workspace @prosopo/provider run eslint --fix src && yarn workspace @prosopo/contract run eslint --fix src",
+    "populate-data": "yarn workspace @prosopo/provider run populate-data"
   },
   "private": true,
   "engines": {
     "node": ">=8.2.0"
   },
   "workspaces": [
+    "protocol",
+    "dapp-example",
+    "react-example",
+    "packages/types",
+    "packages/contract",
     "packages/provider",
     "packages/procaptcha",
-    "protocol",
-    "dapp-example"
+    "packages/procaptcha-react"
   ],
   "packageManager": "yarn@3.2.0",
   "resolutions": {
