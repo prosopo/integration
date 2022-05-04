@@ -25,6 +25,8 @@
 [submodule "packages/procaptcha-react"]
 	path = packages/procaptcha-react
 	url = git@github.com:prosopo-io/procaptcha-react.git
+	branch = main
 [submodule "client-example"]
 	path = client-example
 	url = git@github.com:prosopo-io/client-example.git
+	branch = main
