@@ -28,11 +28,7 @@
     "protocol",
     "dapp-example",
     "client-example",
-    "packages/contract",
-    "packages/provider",
-    "packages/procaptcha",
-    "packages/procaptcha-react",
-    "packages/types"
+    "packages/*"
   ],
   "packageManager": "yarn@3.2.0",
   "resolutions": {
