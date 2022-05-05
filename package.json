@@ -8,7 +8,7 @@
     "url": "git+https://github.com/prosopo-io/integration.git"
   },
   "scripts": {
-    "build": "yarn run build:contract && yarn run build:provider && yarn run build:procaptcha && yarn run build:procaptcha-react && yarn run build:client-example",
+    "build": "yarn run build:contract && yarn run build:provider && yarn run build:procaptcha && yarn run build:procaptcha-react",
     "build:contract": "yarn workspace @prosopo/contract run build",
     "build:provider": "yarn workspace @prosopo/provider run build",
     "build:procaptcha": "yarn workspace @prosopo/procaptcha run build",
