@@ -7,14 +7,32 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
+
+    "lib": [
+      "es2021",
+    ],
+
+    "types": [
+      "node",
+    ],
+
+    "paths": {
+        "@prosopo/*": ["./packages/*/"]
+    },
+
     "moduleResolution": "node",
-    "allowJs": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
+
+    "composite": true,
+
+    "allowJs": true,
     "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+
+    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "declaration": true,
     "strict": true,
     "noImplicitAny": false,
     "strictNullChecks": true,
@@ -32,20 +50,5 @@
     "useUnknownInCatchVariables": false,
 
     "noImplicitOverride": true,
-    "declarationMap": true, 
-
-    "composite": true,
-
-    "types": [
-      "node",
-    ],
-
-    "lib": [
-      "esnext",
-    ],
-
-    "paths": {
-        "@prosopo/*": ["./packages/*"]
-    }
   }
 }
