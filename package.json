@@ -8,8 +8,7 @@
     "url": "git+https://github.com/prosopo-io/integration.git"
   },
   "scripts": {
-    "ci": "npm run clean && npm i",
-    "clean": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' + && find . -name \"build\" -type d -prune -exec rm -rf '{}' + && find . -name \"tsconfig.tsbuildinfo\" -type f -delete",
+    "clean": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' + && find . -name \"build\" -type d -prune -exec rm -rf '{}' +",
     "build": "npm run build:contract && npm run build:provider && npm run build:procaptcha && npm run build:procaptcha-react",
     "build:contract": "npm run clean --workspace=@prosopo/contract && npm run build --workspace=@prosopo/contract",
     "build:provider": "npm run clean --workspace=@prosopo/provider && npm run build --workspace=@prosopo/provider",
