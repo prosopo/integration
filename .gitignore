@@ -125,3 +125,4 @@ contracts/target/
 /data/
 
 /yarn.lock
+package-lock.json

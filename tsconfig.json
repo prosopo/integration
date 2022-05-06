@@ -1,71 +1,18 @@
 {
-  "exclude": [
-    "build/**/*",
-    "**/build/**/*"
-  ],
-  "compilerOptions": {
-    "target": "ES2019",
-    "module": "commonjs",
-    "declaration": true,
-    "resolveJsonModule": true,
-    "noImplicitReturns": false,
-    "noUnusedLocals": false,
-    "noImplicitThis": false,
-    "noImplicitAny": false,
-    "strictNullChecks": true,
-    "strict": false,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "noEmitOnError": true,
-    "composite": true,
-    "lib": ["esnext"],
-    "paths": {
-      "@prosopo/contract": [
-        "./packages/contract/src"
-      ],
-      "@prosopo/contract/*": [
-        "./packages/contract/src/*"
-      ],
-      "@prosopo/provider": [
-        "./packages/provider/src"
-      ],
-      "@prosopo/provider/*": [
-        "./packages/provider/src/*"
-      ],
-      "@prosopo/procaptcha": [
-        "./packages/procaptcha/src"
-      ],
-      "@prosopo/procaptcha/*": [
-        "./packages/procaptcha/src/*"
-      ],
-      "@prosopo/procaptcha-react": [
-        "./packages/procaptcha/src"
-      ],
-      "@prosopo/procaptcha-react/*": [
-        "./packages/procaptcha-react/src/*"
-      ]
-    }
-  },
-  "include": [
-    "./packages/**/*"
-  ],
-  "references": [
-    {
-      "path": "packages/provider",
-      "name": "@prosopo/provider"
-    },
-    {
-      "path": "packages/contract",
-      "name": "@prosopo/contract"
-    },
-    {
-      "path": "packages/procaptcha",
-      "name": "@prosopo/procaptcha"
-    },
-    {
-      "path": "packages/procaptcha-react",
-      "name": "@prosopo/procaptcha-react"
-    }
-  ]
+    "extends": "./tsconfig.build.json",
+    "files": [],
+    "references": [
+        { 
+            "path": "./packages/contract" 
+        }, 
+        { 
+            "path": "./packages/provider" 
+        }, 
+        { 
+            "path": "./packages/procaptcha" 
+        }, 
+        { 
+            "path": "./packages/procaptcha-react" 
+        }
+    ]
 }
