@@ -1,1 +1,7 @@
 mongodb
+db
+.git
+.idea
+node_modules
+**/node_modules
+**/contracts

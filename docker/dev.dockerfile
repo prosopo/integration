@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim
+FROM rust:latest
 RUN apt-get update && apt-get install -y \
     binaryen \
     clang \
@@ -11,25 +11,24 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     llvm \
     make \
+    musl-tools \
+    musl-dev \
     openssl \
     pkg-config \
     python3 \
     zsh
 RUN ln -sf python3 /usr/bin/python
-
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install nodejs -y
 RUN corepack enable
-
-RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" && \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-RUN . ~/.cargo/env && \
-    rustup default stable &&\
-    rustup update &&\
-    rustup update nightly &&\
+RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+RUN rustup default stable && \
+    rustup update && \
+    rustup update nightly && \
     rustup target add wasm32-unknown-unknown --toolchain nightly && \
     rustup component add rust-src --toolchain nightly && \
-    cargo install cargo-dylint dylint-link
-RUN . ~/.cargo/env && cargo install cargo-contract --vers ^0.17 --force
+    cargo install cargo-dylint dylint-link && \
+    cargo install cargo-contract --vers ^1.2.0 --force && \
+    cargo install cargo-tarpaulin
 WORKDIR /usr/src
 ENTRYPOINT ["tail", "-f", "/dev/null"]
