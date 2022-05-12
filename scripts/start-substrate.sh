@@ -75,8 +75,7 @@ else
   SUBSTRATE_CONTAINER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$SUBSTRATE_CONTAINER_NAME")
 fi
 RESPONSE_CODE=$(curl -sI -o /dev/null -w "%{http_code}\n" "$SUBSTRATE_CONTAINER_IP":9944)
-while [ "$RESPONSE_CODE" != '000' ]; do
-  echo $RESPONSE_CODE
+while [ "$RESPONSE_CODE" != '400' ]; do
   RESPONSE_CODE=$(curl -sI -o /dev/null -w "%{http_code}\n" "$SUBSTRATE_CONTAINER_IP":9944)
   sleep 1
 done
