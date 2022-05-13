@@ -73,6 +73,7 @@ fi
 
 echo "INSTALL_PACKAGES: $INSTALL_PACKAGES"
 echo "BUILD_PROVIDER:   $BUILD_PROVIDER"
+echo "BUILD_SUBSTRATE:  $BUILD_SUBSTRATE"
 echo "DEPLOY_PROTOCOL:  $DEPLOY_PROTOCOL"
 echo "DEPLOY_DAPP:      $DEPLOY_DAPP"
 echo "TEST_DB:          $TEST_DB"
@@ -101,7 +102,7 @@ fi
 if [[ $TEST_DB == true ]]; then
   START_SUBSTRATE_ARGS+=( --test-db )
 fi
-./scripts/start-substrate.sh "${START_SUBSTRATE_ARGS[@]}"
+./scripts/start-substrate.sh "${START_SUBSTRATE_ARGS[@]}" || exit 1
 
 # start the database container
 if [[ $TEST_DB == true ]]; then

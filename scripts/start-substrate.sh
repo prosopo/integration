@@ -74,8 +74,21 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
   SUBSTRATE_CONTAINER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$SUBSTRATE_CONTAINER_NAME")
 fi
-RESPONSE_CODE=$(curl -sI -o /dev/null -w "%{http_code}\n" "$SUBSTRATE_CONTAINER_IP":9944)
-while [ "$RESPONSE_CODE" != '400' ]; do
-  RESPONSE_CODE=$(curl -sI -o /dev/null -w "%{http_code}\n" "$SUBSTRATE_CONTAINER_IP":9944)
+
+rpc_methods () {
+  RESPONSE_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "rpc_methods"}' "$SUBSTRATE_CONTAINER_IP":9933/)
+}
+
+echo "Substrate container IP: $SUBSTRATE_CONTAINER_IP"
+API_TRIES=0
+rpc_methods
+while [ "$RESPONSE_CODE" != 200 ]; do
+  echo "Substrate API Response code: $RESPONSE_CODE"
+  rpc_methods
+  ((API_TRIES = API_TRIES + 1))
+  if [ "$API_TRIES" -gt 10 ]; then
+    echo "Could not reach Substrate API. Terminating process."
+    exit 1
+  fi
   sleep 1
 done
