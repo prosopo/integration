@@ -21,7 +21,7 @@ if [[ $MNEMONIC_COUNT -ne 12 ]]; then
 else
   echo "PROVIDER_MNEMONIC set"
   sedi () {
-    sed --version >/dev/null 2>&1 && sed -i -- "$@" || sed -i "" "$@"
+    sed --version >/dev/null 2>&1 && sed -i "$@" || sed -i "" "$@"
   }
   grep -q '^PROVIDER_MNEMONIC=.*' /usr/src/.env && sedi -e "s/PROVIDER_MNEMONIC=.*/PROVIDER_MNEMONIC=$PROVIDER_MNEMONIC/g" /usr/src/.env || echo "PROVIDER_MNEMONIC=$PROVIDER_MNEMONIC" >>/usr/src/.env
 fi

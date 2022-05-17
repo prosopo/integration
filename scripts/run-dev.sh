@@ -81,7 +81,7 @@ touch $ENV_FILE
 
 # https://stackoverflow.com/questions/2320564/sed-i-command-for-in-place-editing-to-work-with-both-gnu-sed-and-bsd-osx/38595160#38595160
 sedi () {
-    sed --version >/dev/null 2>&1 && sed -i -- "$@" || sed -i "" "$@"
+    sed --version >/dev/null 2>&1 && sed -i "$@" || sed -i "" "$@"
 }
 
 # Docker compose doesn't like .env variables that contain spaces and are not quoted
