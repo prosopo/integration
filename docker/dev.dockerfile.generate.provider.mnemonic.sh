@@ -20,5 +20,5 @@ if [[ $MNEMONIC_COUNT -ne 12 ]]; then
   exit 1
 else
   echo "PROVIDER_MNEMONIC set"
-  grep -q '^PROVIDER_MNEMONIC=.*' /usr/src/.env && sed -i -e "s/PROVIDER_MNEMONIC=.*/PROVIDER_MNEMONIC=$PROVIDER_MNEMONIC/g" /usr/src/.env || echo "PROVIDER_MNEMONIC=$PROVIDER_MNEMONIC" >>/usr/src/.env
+  grep -q '^PROVIDER_MNEMONIC=.*' /usr/src/.env && sed -i '' -e "s/PROVIDER_MNEMONIC=.*/PROVIDER_MNEMONIC=$PROVIDER_MNEMONIC/g" /usr/src/.env || echo "PROVIDER_MNEMONIC=$PROVIDER_MNEMONIC" >>/usr/src/.env
 fi

@@ -85,7 +85,7 @@ touch $ENV_FILE
 
 # Docker compose doesn't like .env variables that contain spaces and are not quoted
 # https://stackoverflow.com/questions/69512549/key-cannot-contain-a-space-error-while-running-docker-compose
-sed -i -e "s/PROVIDER_MNEMONIC=\"*\([a-z ]*\)\"*/PROVIDER_MNEMONIC=\"\1\"/g" $ENV_FILE
+sed -i '' -e "s/PROVIDER_MNEMONIC=\"*\([a-z ]*\)\"*/PROVIDER_MNEMONIC=\"\1\"/g" $ENV_FILE
 
 # spin up the substrate node
 if [[ $BUILD_SUBSTRATE == true ]]; then
@@ -114,9 +114,9 @@ fi
 docker compose up provider-api -d
 
 # return .env to its original state
-sed -i -e 's/PROVIDER_MNEMONIC="\([a-z ]*\)"/PROVIDER_MNEMONIC=\1/g' $ENV_FILE
 
 CONTAINER_NAME=$(docker ps -q -f name=provider-api)
+sed -i '' -e 's/PROVIDER_MNEMONIC="\([a-z ]*\)"/PROVIDER_MNEMONIC=\1/g' $ENV_FILE
 
 if [[ $INSTALL_PACKAGES == true ]]; then
   docker exec -t "$CONTAINER_NAME" zsh -c 'cd /usr/src && yarn'
