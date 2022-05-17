@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     libc-dev \
     libssl-dev \
     llvm \
+    locales \
     make \
     musl-tools \
     musl-dev \
@@ -30,5 +31,9 @@ RUN rustup default stable && \
     cargo install cargo-dylint dylint-link && \
     cargo install cargo-contract --vers ^1.2.0 --force && \
     cargo install cargo-tarpaulin
+RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 WORKDIR /usr/src
 ENTRYPOINT ["tail", "-f", "/dev/null"]
