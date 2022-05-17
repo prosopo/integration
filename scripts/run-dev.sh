@@ -24,6 +24,7 @@ DEPLOY_PROTOCOL=false
 DEPLOY_DAPP=false
 RESTART_CHAIN=false
 TEST_DB=false
+ENV_FILE=.env
 
 for arg in "$@"; do
   echo "$arg"
@@ -54,6 +55,7 @@ for arg in "$@"; do
     ;;
   --test-db)
     TEST_DB=true
+    ENV_FILE=.env.test
     shift # Remove --test-db from `$@`
     ;;
   -h | --help)
@@ -64,12 +66,6 @@ for arg in "$@"; do
     ;;
   esac
 done
-
-if [[ $TEST_DB == true ]]; then
-  ENV_FILE=.env.test
-else
-  ENV_FILE=.env
-fi
 
 echo "INSTALL_PACKAGES: $INSTALL_PACKAGES"
 echo "BUILD_PROVIDER:   $BUILD_PROVIDER"
@@ -105,17 +101,16 @@ fi
 ./scripts/start-substrate.sh "${START_SUBSTRATE_ARGS[@]}"
 
 # start the database container
-if [[ $TEST_DB == true ]]; then
-  ./scripts/start-db.sh --test-db
-else
-  ./scripts/start-db.sh
-fi
+./scripts/start-db.sh --env-file=$ENV_FILE
 
 docker compose up provider-api -d
+CONTAINER_NAME=$(docker ps -q -f name=provider-api)
+
+if [[ $TEST_DB == true ]]; then
+  docker cp .database_accounts.json $CONTAINER_NAME:/usr/src/database_accounts.json
+fi
 
 # return .env to its original state
-
-CONTAINER_NAME=$(docker ps -q -f name=provider-api)
 sed -i '' -e 's/PROVIDER_MNEMONIC="\([a-z ]*\)"/PROVIDER_MNEMONIC=\1/g' $ENV_FILE
 
 if [[ $INSTALL_PACKAGES == true ]]; then

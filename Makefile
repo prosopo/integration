@@ -12,4 +12,4 @@ restart:
 	./scripts/restart-chain.sh
 
 export:
-	./scripts/export.sh
+	./scripts/export.sh --populate
