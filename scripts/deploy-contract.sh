@@ -103,7 +103,7 @@ DEPLOY_RESULT=$(docker exec "$CONTRACTS_CONTAINER" bash -c "$CMDSALT")
 echo $DEPLOY_RESULT
 
 if [[ $(echo "$DEPLOY_RESULT" | grep 'ExtrinsicSuccess' | wc -l) == 1 ]]; then
-  CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | grep 'who: [A-Za-z0-9]*' | tail -1 | tr "[:space:]" '\n' | tail -1)
+  CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | grep -oP 'who: [A-Za-z0-9]*' | tail -1 | cut -d ' ' -f2)
   echo "$CONTRACT_ADDRESS"
 else
   echo "Contract failed to deploy:\n$DEPLOY_RESULT"
