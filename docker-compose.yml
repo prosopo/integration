@@ -7,7 +7,7 @@ services:
         source: ./protocol
         target: /usr/src/protocol
       - type: bind
-        source: ./protocol
+        source: ./dapp-example
         target: /usr/src/dapp-example
       - type: bind
         source: ./docker

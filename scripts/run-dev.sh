@@ -124,7 +124,7 @@ if [[ $INSTALL_PACKAGES == true ]]; then
 fi
 
 if [[ $DEPLOY_PROTOCOL == true ]]; then
-  CONTRACT_ADDRESS=$(./scripts/deploy-contract.sh \
+  DEPLOY_RESULT=$(./scripts/deploy-contract.sh \
     --contract-source="/usr/src/protocol/contracts" \
     --wasm="./target/ink/prosopo.wasm" \
     --constructor="default" \
@@ -136,16 +136,29 @@ if [[ $DEPLOY_PROTOCOL == true ]]; then
     --use-salt \
     --build ||
     exit 1)
+  CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | tail -1)
+  echo "Protocol Contract Address: $CONTRACT_ADDRESS"
   # Put the contract address in the env file
-  echo "Contract Address: $CONTRACT_ADDRESS"
-  echo "Env file: $ENV_FILE"
-  grep -q "^CONTRACT_ADDRESS=.*" "$ENV_FILE" && sed -i -e "s/CONTRACT_ADDRESS=.*/CONTRACT_ADDRESS=$CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >>"$ENV_FILE"
-
+  grep -q "^CONTRACT_ADDRESS=.*" "$ENV_FILE" && sed -i -e "s/^CONTRACT_ADDRESS=.*/CONTRACT_ADDRESS=$CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >>"$ENV_FILE"
 fi
 
 if [[ $DEPLOY_DAPP == true ]]; then
-  echo "Installing packages for dapp-example, building and deploying contract"
-  docker exec -t "$CONTAINER_NAME" zsh -c "/usr/src/docker/dev.dockerfile.deploy.contract.and.store.account.sh /usr/src/dapp-example DAPP_CONTRACT_ADDRESS"
+  DEPLOY_RESULT=$(./scripts/deploy-contract.sh \
+    --contract-source="/usr/src/dapp-example/contracts" \
+    --wasm="./target/ink/dapp.wasm" \
+    --constructor="new" \
+    --contract-args="5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY 2000000000000" \
+    --endowment="1000000000000" \
+    --endpoint="ws://substrate-node" \
+    --port="9944" \
+    --suri="//Alice" \
+    --use-salt \
+    --build ||
+    exit 1)
+  CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | tail -1)
+  echo "Dapp Example Contract Address: $CONTRACT_ADDRESS"
+  # Put the contract address in the env file
+  grep -q "^DAPP_CONTRACT_ADDRESS=.*" "$ENV_FILE" && sed -i -e "s/^DAPP_CONTRACT_ADDRESS=.*/DAPP_CONTRACT_ADDRESS=$CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "DAPP_CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >>"$ENV_FILE"
 fi
 
 echo "Linking artifacts to core package and contract package"

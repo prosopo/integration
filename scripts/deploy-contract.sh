@@ -101,9 +101,7 @@ if [[ $USE_SALT == true ]]; then
   CMDSALT="$CMD --salt $SALT"
 fi
 
-DEPLOY_RESULT=$(docker exec -t "$CONTRACTS_CONTAINER" bash -c "$CMDSALT")
-
-echo "Deploy Result: $DEPLOY_RESULT"
+DEPLOY_RESULT=$(docker exec "$CONTRACTS_CONTAINER" bash -c "$CMDSALT")
 
 if [[ $(echo "$DEPLOY_RESULT" | grep 'ExtrinsicSuccess' | wc -l) == 1 ]]; then
   CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | grep 'who: [A-Za-z0-9]*' | tail -1 | tr "[:space:]" '\n' | tail -1)
