@@ -143,11 +143,12 @@ if [[ $DEPLOY_PROTOCOL == true ]]; then
 fi
 
 if [[ $DEPLOY_DAPP == true ]]; then
+  PROTOCOL_CONTRACT_ADDRESS=$(grep "^CONTRACT_ADDRESS=.*" $ENV_FILE | cut -d '=' -f2)
   DEPLOY_RESULT=$(./scripts/deploy-contract.sh \
     --contract-source="/usr/src/dapp-example/contracts" \
     --wasm="./target/ink/dapp.wasm" \
     --constructor="new" \
-    --contract-args="5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY 2000000000000" \
+    --contract-args="1000000000000000000000 1000000 $PROTOCOL_CONTRACT_ADDRESS 80 180000" \
     --endowment="1000000000000" \
     --endpoint="ws://substrate-node" \
     --port="9944" \
