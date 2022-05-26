@@ -91,7 +91,7 @@ if [[ $BUILD == true ]]; then
 fi
 
 # Generate deploy command
-CMD="cd $CONTRACT_SOURCE && cargo contract instantiate $WASM --args $CONTRACT_ARGS --constructor $CONSTRUCTOR --suri $SURI --value $ENDOWMENT --url '$ENDPOINT:$PORT'"
+CMD="cargo contract instantiate $WASM --args $CONTRACT_ARGS --constructor $CONSTRUCTOR --suri $SURI --value $ENDOWMENT --url '$ENDPOINT:$PORT'"
 CMDSALT="$CMD"
 if [[ $USE_SALT == true ]]; then
   SALT=$(date | sha256sum | cut -b 1-64)
@@ -99,13 +99,12 @@ if [[ $USE_SALT == true ]]; then
 fi
 
 # Deploy the contract
-DEPLOY_RESULT=$(docker exec "$CONTRACTS_CONTAINER" bash -c "$CMDSALT")
-
-if [[ $(echo "$DEPLOY_RESULT" | grep 'ExtrinsicSuccess' | wc -l) == 1 ]]; then
-  CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | grep -oP 'who: [A-Za-z0-9]*' | tail -1 | cut -d ' ' -f2)
+DEPLOY_RESULT=$(docker exec -w "$CONTRACT_SOURCE" "$CONTRACTS_CONTAINER" bash -c "$CMDSALT")
+if [[ $(echo "$DEPLOY_RESULT" | grep -c 'ExtrinsicSuccess') == 1 ]]; then
+  CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | grep -oP 'to: [A-Za-z0-9]*' | tail -1 | cut -d ' ' -f2)
   echo "$CONTRACT_ADDRESS"
 else
-  echo "Contract failed to deploy:"
   echo "$DEPLOY_RESULT"
+  echo "Contract failed to deploy"
   exit 1
 fi

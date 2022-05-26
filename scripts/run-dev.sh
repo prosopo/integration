@@ -151,9 +151,12 @@ if [[ $DEPLOY_PROTOCOL == true ]]; then
     --port=$SUBSTRATE_PORT \
     --suri=$SURI \
     --use-salt \
-    --build ||
-    exit 1)
+    --build)
   CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | tail -1)
+  if [[ $CONTRACT_ADDRESS == "Contract failed to deploy" ]]; then
+    echo "$DEPLOY_RESULT"
+    exit 1
+  fi
   echo "Protocol Contract Address: $CONTRACT_ADDRESS"
   # Put the contract address in the env file
   grep -q "^CONTRACT_ADDRESS=.*" "$ENV_FILE" && sedi -e "s/^CONTRACT_ADDRESS=.*/CONTRACT_ADDRESS=$CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >>"$ENV_FILE"
@@ -162,6 +165,7 @@ fi
 
 if [[ $DEPLOY_DAPP == true ]]; then
   PROTOCOL_CONTRACT_ADDRESS=$(grep "^CONTRACT_ADDRESS=.*" $ENV_FILE | cut -d '=' -f2)
+  echo "Protocol contract address in dapp deploy: $PROTOCOL_CONTRACT_ADDRESS"
   CONTRACT_SOURCE="/usr/src/dapp-example/contracts"
   WASM="./target/ink/dapp.wasm"
   CONSTRUCTOR="new"
@@ -177,9 +181,12 @@ if [[ $DEPLOY_DAPP == true ]]; then
     --port=$SUBSTRATE_PORT \
     --suri=$SURI \
     --use-salt \
-    --build ||
-    exit 1)
+    --build)
   DAPP_CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | tail -1)
+  if [[ $DAPP_CONTRACT_ADDRESS == "Contract failed to deploy" ]]; then
+    echo "$DEPLOY_RESULT"
+    exit 1
+  fi
   echo "Dapp Example Contract Address: $DAPP_CONTRACT_ADDRESS"
   # Put the contract address in the env file
   grep -q "^DAPP_CONTRACT_ADDRESS=.*" "$ENV_FILE" && sedi -e "s/^DAPP_CONTRACT_ADDRESS=.*/DAPP_CONTRACT_ADDRESS=$DAPP_CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "DAPP_CONTRACT_ADDRESS=$DAPP_CONTRACT_ADDRESS" >>"$ENV_FILE"
