@@ -95,12 +95,12 @@ else
 fi
 
 # start the substrate process as a background task
-START_SUBSTRATE_ARGS=( )
+START_SUBSTRATE_ARGS=()
 if [[ $RESTART_CHAIN == true ]]; then
-  START_SUBSTRATE_ARGS+=( --restart-chain )
+  START_SUBSTRATE_ARGS+=(--restart-chain)
 fi
 if [[ $TEST_DB == true ]]; then
-  START_SUBSTRATE_ARGS+=( --test-db )
+  START_SUBSTRATE_ARGS+=(--test-db)
 fi
 ./scripts/start-substrate.sh "${START_SUBSTRATE_ARGS[@]}" || exit 1
 
@@ -112,6 +112,7 @@ else
 fi
 
 docker compose up provider-api -d
+docker compose up contracts -d
 
 # return .env to its original state
 sed -i -e 's/PROVIDER_MNEMONIC="\([a-z ]*\)"/PROVIDER_MNEMONIC=\1/g' $ENV_FILE
@@ -123,8 +124,23 @@ if [[ $INSTALL_PACKAGES == true ]]; then
 fi
 
 if [[ $DEPLOY_PROTOCOL == true ]]; then
-  echo "Installing packages for protocol, building, and deploying contract"
-  docker exec -t "$CONTAINER_NAME" zsh -c "/usr/src/docker/dev.dockerfile.deploy.contract.and.store.account.sh /usr/src/protocol CONTRACT_ADDRESS"
+  CONTRACT_ADDRESS=$(./scripts/deploy-contract.sh \
+    --contract-source="/usr/src/protocol/contracts" \
+    --wasm="./target/ink/prosopo.wasm" \
+    --constructor="default" \
+    --contract-args="5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY 2000000000000" \
+    --endowment="1000000000000" \
+    --endpoint="ws://substrate-node" \
+    --port="9944" \
+    --suri="//Alice" \
+    --use-salt \
+    --build ||
+    exit 1)
+  # Put the contract address in the env file
+  echo "Contract Address: $CONTRACT_ADDRESS"
+  echo "Env file: $ENV_FILE"
+  grep -q "^CONTRACT_ADDRESS=.*" "$ENV_FILE" && sed -i -e "s/CONTRACT_ADDRESS=.*/CONTRACT_ADDRESS=$CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >>"$ENV_FILE"
+
 fi
 
 if [[ $DEPLOY_DAPP == true ]]; then

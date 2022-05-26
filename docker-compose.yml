@@ -1,5 +1,20 @@
 version: '3.4'
 services:
+  contracts:
+    image: paritytech/contracts-ci-linux:latest
+    volumes:
+      - type: bind
+        source: ./protocol
+        target: /usr/src/protocol
+      - type: bind
+        source: ./protocol
+        target: /usr/src/dapp-example
+      - type: bind
+        source: ./docker
+        target: /usr/src/docker
+    command: "tail -f /dev/null"
+    links:
+      - substrate-node
   provider-api:
     build:
       context: .
