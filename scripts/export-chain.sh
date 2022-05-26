@@ -34,6 +34,10 @@ rm -rf ./.chain-test
 if [[ $TEST_DB == true ]]; then
   docker cp $SUBSTRATE_CONTAINER_NAME:/chain-test/. ./.chain-test
 else 
+  sedi () {
+      sed --version >/dev/null 2>&1 && sed -i "$@" || sed -i "" "$@"
+  }
   cp .env .env.test
+  sedi -e "s/=prosopo/=prosopo_test/g" .env.test
   docker cp $SUBSTRATE_CONTAINER_NAME:/chain-data/. ./.chain-test
 fi
