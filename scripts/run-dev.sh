@@ -179,10 +179,10 @@ if [[ $DEPLOY_DAPP == true ]]; then
     --use-salt \
     --build ||
     exit 1)
-  CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | tail -1)
-  echo "Dapp Example Contract Address: $CONTRACT_ADDRESS"
+  DAPP_CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | tail -1)
+  echo "Dapp Example Contract Address: $DAPP_CONTRACT_ADDRESS"
   # Put the contract address in the env file
-  grep -q "^DAPP_CONTRACT_ADDRESS=.*" "$ENV_FILE" && sedi -e "s/^DAPP_CONTRACT_ADDRESS=.*/DAPP_CONTRACT_ADDRESS=$CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "DAPP_CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >>"$ENV_FILE"
+  grep -q "^DAPP_CONTRACT_ADDRESS=.*" "$ENV_FILE" && sedi -e "s/^DAPP_CONTRACT_ADDRESS=.*/DAPP_CONTRACT_ADDRESS=$DAPP_CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "DAPP_CONTRACT_ADDRESS=$DAPP_CONTRACT_ADDRESS" >>"$ENV_FILE"
 fi
 
 echo "Linking artifacts to core package and contract package"

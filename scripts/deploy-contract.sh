@@ -87,7 +87,7 @@ echo "Contract Source:           $CONTRACT_SOURCE"
 
 if [[ $BUILD == true ]]; then
   echo "Building contract: $CONTRACT_SOURCE"
-  docker exec -t "$CONTRACTS_CONTAINER" bash -c "cd $CONTRACT_SOURCE && cargo +nightly contract build"
+  docker exec "$CONTRACTS_CONTAINER" bash -c "cd $CONTRACT_SOURCE && cargo +nightly contract build"
 fi
 
 # Generate deploy command
@@ -100,12 +100,12 @@ fi
 
 # Deploy the contract
 DEPLOY_RESULT=$(docker exec "$CONTRACTS_CONTAINER" bash -c "$CMDSALT")
-echo $DEPLOY_RESULT
 
 if [[ $(echo "$DEPLOY_RESULT" | grep 'ExtrinsicSuccess' | wc -l) == 1 ]]; then
   CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | grep -oP 'who: [A-Za-z0-9]*' | tail -1 | cut -d ' ' -f2)
   echo "$CONTRACT_ADDRESS"
 else
-  echo "Contract failed to deploy:\n$DEPLOY_RESULT"
+  echo "Contract failed to deploy:"
+  echo "$DEPLOY_RESULT"
   exit 1
 fi
