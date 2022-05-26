@@ -157,6 +157,7 @@ if [[ $DEPLOY_PROTOCOL == true ]]; then
   echo "Protocol Contract Address: $CONTRACT_ADDRESS"
   # Put the contract address in the env file
   grep -q "^CONTRACT_ADDRESS=.*" "$ENV_FILE" && sedi -e "s/^CONTRACT_ADDRESS=.*/CONTRACT_ADDRESS=$CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >>"$ENV_FILE"
+  grep -q "^REACT_APP_DAPP_CONTRACT_ADDRESS=.*" "$ENV_FILE" && sedi -e "s/^REACT_APP_DAPP_CONTRACT_ADDRESS=.*/REACT_APP_DAPP_CONTRACT_ADDRESS=$CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "REACT_APP_DAPP_CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >>"$ENV_FILE"
 fi
 
 if [[ $DEPLOY_DAPP == true ]]; then
