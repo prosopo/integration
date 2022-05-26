@@ -27,11 +27,6 @@ RESTART_CHAIN=false
 TEST_DB=false
 ENV_FILE=.env
 
-# Shared Contract deployment parameters
-SUBSTRATE_ENDPOINT="ws://substrate-node"
-SUBSTRATE_PORT="9944"
-SURI="//Alice"
-
 for arg in "$@"; do
   echo "$arg"
   case $arg in
@@ -87,6 +82,7 @@ touch $ENV_FILE
 # remove any duplicates in .env file
 cat $ENV_FILE | uniq >$ENV_FILE.tmp
 mv $ENV_FILE.tmp $ENV_FILE
+source $ENV_FILE
 
 # https://stackoverflow.com/questions/2320564/sed-i-command-for-in-place-editing-to-work-with-both-gnu-sed-and-bsd-osx/38595160#38595160
 sedi() {
@@ -95,7 +91,7 @@ sedi() {
 
 # Docker compose doesn't like .env variables that contain spaces and are not quoted
 # https://stackoverflow.com/questions/69512549/key-cannot-contain-a-space-error-while-running-docker-compose
-sedi -e "s/PROVIDER_MNEMONIC=\"*\([a-z ]*\)\"*/PROVIDER_MNEMONIC=\"\1\"/g" $ENV_FILE
+# sedi -e "s/PROVIDER_MNEMONIC=\"*\([a-z ]*\)\"*/PROVIDER_MNEMONIC=\"\1\"/g" $ENV_FILE
 
 # spin up the substrate node
 if [[ $BUILD_SUBSTRATE == true ]]; then
@@ -127,29 +123,22 @@ fi
 docker compose up contracts -d
 
 # return .env to its original state
-sedi -e 's/PROVIDER_MNEMONIC="\([a-z ]*\)"/PROVIDER_MNEMONIC=\1/g' $ENV_FILE
+# sedi -e 's/PROVIDER_MNEMONIC="\([a-z ]*\)"/PROVIDER_MNEMONIC=\1/g' $ENV_FILE
 
 if [[ $INSTALL_PACKAGES == true ]]; then
   docker exec -t "$CONTAINER_NAME" zsh -c 'cd /usr/src && yarn'
 fi
 
-
-
 if [[ $DEPLOY_PROTOCOL == true ]]; then
-  CONTRACT_SOURCE="/usr/src/protocol/contracts"
-  WASM="./target/ink/prosopo.wasm"
-  CONSTRUCTOR="default"
-  CONTRACT_ARGS="5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY 2000000000000"
-  ENDOWMENT="1000000000000"
   DEPLOY_RESULT=$(./scripts/deploy-contract.sh \
-    --contract-source=$CONTRACT_SOURCE \
-    --wasm=$WASM \
-    --constructor=$CONSTRUCTOR \
-    --contract-args="$CONTRACT_ARGS" \
-    --endowment=$ENDOWMENT \
-    --endpoint=$SUBSTRATE_ENDPOINT \
-    --port=$SUBSTRATE_PORT \
-    --suri=$SURI \
+    --contract-source="$PROTOCOL_CONTRACT_SOURCE" \
+    --wasm="$PROTOCOL_WASM" \
+    --constructor="$PROTOCOL_CONSTRUCTOR" \
+    --contract-args="$PROTOCOL_CONTRACT_ARGS" \
+    --endowment="$PROTOCOL_ENDOWMENT" \
+    --endpoint="$SUBSTRATE_ENDPOINT" \
+    --port="$SUBSTRATE_PORT" \
+    --suri="$DEPLOYER_SURI" \
     --use-salt \
     --build)
   CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | tail -1)
@@ -158,28 +147,24 @@ if [[ $DEPLOY_PROTOCOL == true ]]; then
     exit 1
   fi
   echo "Protocol Contract Address: $CONTRACT_ADDRESS"
-  # Put the contract address in the env file
+  # Put the contract address in the env file in various places
   grep -q "^CONTRACT_ADDRESS=.*" "$ENV_FILE" && sedi -e "s/^CONTRACT_ADDRESS=.*/CONTRACT_ADDRESS=$CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >>"$ENV_FILE"
   grep -q "^REACT_APP_DAPP_CONTRACT_ADDRESS=.*" "$ENV_FILE" && sedi -e "s/^REACT_APP_DAPP_CONTRACT_ADDRESS=.*/REACT_APP_DAPP_CONTRACT_ADDRESS=$CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "REACT_APP_DAPP_CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >>"$ENV_FILE"
+  echo "$DAPP_CONTRACT_ARGS" && sedi -e "s/([[:alnum:]]{48})/$CONTRACT_ADDRESS/g" "$ENV_FILE"
 fi
 
 if [[ $DEPLOY_DAPP == true ]]; then
   PROTOCOL_CONTRACT_ADDRESS=$(grep "^CONTRACT_ADDRESS=.*" $ENV_FILE | cut -d '=' -f2)
-  echo "Protocol contract address in dapp deploy: $PROTOCOL_CONTRACT_ADDRESS"
-  CONTRACT_SOURCE="/usr/src/dapp-example/contracts"
-  WASM="./target/ink/dapp.wasm"
-  CONSTRUCTOR="new"
-  CONTRACT_ARGS="1000000000000000000000 1000000 $PROTOCOL_CONTRACT_ADDRESS 80 180000"
-  ENDOWMENT="1000000000000"
+  DAPP_CONTRACT_ARGS_POPULATED=$(echo $DAPP_CONTRACT_ARGS | sed -e "s/\\\$PROTOCOL_CONTRACT_ADDRESS/$PROTOCOL_CONTRACT_ADDRESS/g")
   DEPLOY_RESULT=$(./scripts/deploy-contract.sh \
-    --contract-source=$CONTRACT_SOURCE \
-    --wasm=$WASM \
-    --constructor=$CONSTRUCTOR \
-    --contract-args="$CONTRACT_ARGS" \
-    --endowment=$ENDOWMENT \
-    --endpoint=$SUBSTRATE_ENDPOINT \
-    --port=$SUBSTRATE_PORT \
-    --suri=$SURI \
+    --contract-source="$DAPP_CONTRACT_SOURCE" \
+    --wasm="$DAPP_WASM" \
+    --constructor="$DAPP_CONSTRUCTOR" \
+    --contract-args="$DAPP_CONTRACT_ARGS_POPULATED" \
+    --endowment="$DAPP_ENDOWMENT" \
+    --endpoint="$SUBSTRATE_ENDPOINT" \
+    --port="$SUBSTRATE_PORT" \
+    --suri="$DEPLOYER_SURI" \
     --use-salt \
     --build)
   DAPP_CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | tail -1)
