@@ -32,7 +32,6 @@ ENDOWMENT="10000000000000"
 ENDPOINT="0.0.0.0"
 PORT="9944"
 SURI=""
-ENV_FILE=".env"
 USE_SALT=false
 BUILD=false
 
@@ -83,30 +82,30 @@ for arg in "$@"; do
 done
 
 CONTRACTS_CONTAINER=$(docker ps -q -f name=integration-contracts)
-echo "Container id:     $CONTRACTS_CONTAINER"
-echo "Contract Source:  $CONTRACT_SOURCE"
+echo "Contract Container ID:     $CONTRACTS_CONTAINER"
+echo "Contract Source:           $CONTRACT_SOURCE"
 
 if [[ $BUILD == true ]]; then
-  echo "Building contract"
+  echo "Building contract: $CONTRACT_SOURCE"
   docker exec -t "$CONTRACTS_CONTAINER" bash -c "cd $CONTRACT_SOURCE && cargo +nightly contract build"
 fi
 
-#echo "Source is $CONTRACT_SOURCE"
-
+# Generate deploy command
 CMD="cd $CONTRACT_SOURCE && cargo contract instantiate $WASM --args $CONTRACT_ARGS --constructor $CONSTRUCTOR --suri $SURI --value $ENDOWMENT --url '$ENDPOINT:$PORT'"
-
 CMDSALT="$CMD"
 if [[ $USE_SALT == true ]]; then
   SALT=$(date | sha256sum | cut -b 1-64)
   CMDSALT="$CMD --salt $SALT"
 fi
 
+# Deploy the contract
 DEPLOY_RESULT=$(docker exec "$CONTRACTS_CONTAINER" bash -c "$CMDSALT")
+echo $DEPLOY_RESULT
 
 if [[ $(echo "$DEPLOY_RESULT" | grep 'ExtrinsicSuccess' | wc -l) == 1 ]]; then
   CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | grep 'who: [A-Za-z0-9]*' | tail -1 | tr "[:space:]" '\n' | tail -1)
   echo "$CONTRACT_ADDRESS"
 else
-  echo "Contract failed to deploy"
+  echo "Contract failed to deploy:\n$DEPLOY_RESULT"
   exit 1
 fi

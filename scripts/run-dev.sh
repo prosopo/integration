@@ -17,6 +17,7 @@ USAGE
   exit 1
 }
 
+# Flags
 INSTALL_PACKAGES=false
 BUILD_SUBSTRATE=false
 BUILD_PROVIDER=false
@@ -25,6 +26,11 @@ DEPLOY_DAPP=false
 RESTART_CHAIN=false
 TEST_DB=false
 ENV_FILE=.env
+
+# Shared Contract deployment parameters
+SUBSTRATE_ENDPOINT="ws://substrate-node"
+SUBSTRATE_PORT="9944"
+SURI="//Alice"
 
 for arg in "$@"; do
   echo "$arg"
@@ -78,9 +84,13 @@ echo "ENV_FILE:         $ENV_FILE"
 # create an empty .env file
 touch $ENV_FILE
 
+# remove any duplicates in .env file
+cat $ENV_FILE | uniq >$ENV_FILE.tmp
+mv $ENV_FILE.tmp $ENV_FILE
+
 # https://stackoverflow.com/questions/2320564/sed-i-command-for-in-place-editing-to-work-with-both-gnu-sed-and-bsd-osx/38595160#38595160
-sedi () {
-    sed --version >/dev/null 2>&1 && sed -i "$@" || sed -i "" "$@"
+sedi() {
+  sed --version >/dev/null 2>&1 && sed -i "$@" || sed -i "" "$@"
 }
 
 # Docker compose doesn't like .env variables that contain spaces and are not quoted
@@ -111,7 +121,7 @@ docker compose up provider-api -d
 CONTAINER_NAME=$(docker ps -q -f name=provider-api)
 
 if [[ $TEST_DB == true ]]; then
-  docker cp .database_accounts.json $CONTAINER_NAME:/usr/src/database_accounts.json
+  docker cp .database_accounts.json "$CONTAINER_NAME":/usr/src/database_accounts.json
 fi
 
 docker compose up contracts -d
@@ -123,16 +133,23 @@ if [[ $INSTALL_PACKAGES == true ]]; then
   docker exec -t "$CONTAINER_NAME" zsh -c 'cd /usr/src && yarn'
 fi
 
+
+
 if [[ $DEPLOY_PROTOCOL == true ]]; then
+  CONTRACT_SOURCE="/usr/src/protocol/contracts"
+  WASM="./target/ink/prosopo.wasm"
+  CONSTRUCTOR="default"
+  CONTRACT_ARGS="5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY 2000000000000"
+  ENDOWMENT="1000000000000"
   DEPLOY_RESULT=$(./scripts/deploy-contract.sh \
-    --contract-source="/usr/src/protocol/contracts" \
-    --wasm="./target/ink/prosopo.wasm" \
-    --constructor="default" \
-    --contract-args="5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY 2000000000000" \
-    --endowment="1000000000000" \
-    --endpoint="ws://substrate-node" \
-    --port="9944" \
-    --suri="//Alice" \
+    --contract-source=$CONTRACT_SOURCE \
+    --wasm=$WASM \
+    --constructor=$CONSTRUCTOR \
+    --contract-args="$CONTRACT_ARGS" \
+    --endowment=$ENDOWMENT \
+    --endpoint=$SUBSTRATE_ENDPOINT \
+    --port=$SUBSTRATE_PORT \
+    --suri=$SURI \
     --use-salt \
     --build ||
     exit 1)
@@ -144,15 +161,20 @@ fi
 
 if [[ $DEPLOY_DAPP == true ]]; then
   PROTOCOL_CONTRACT_ADDRESS=$(grep "^CONTRACT_ADDRESS=.*" $ENV_FILE | cut -d '=' -f2)
+  CONTRACT_SOURCE="/usr/src/dapp-example/contracts"
+  WASM="./target/ink/dapp.wasm"
+  CONSTRUCTOR="new"
+  CONTRACT_ARGS="1000000000000000000000 1000000 $PROTOCOL_CONTRACT_ADDRESS 80 180000"
+  ENDOWMENT="1000000000000"
   DEPLOY_RESULT=$(./scripts/deploy-contract.sh \
-    --contract-source="/usr/src/dapp-example/contracts" \
-    --wasm="./target/ink/dapp.wasm" \
-    --constructor="new" \
-    --contract-args="1000000000000000000000 1000000 $PROTOCOL_CONTRACT_ADDRESS 80 180000" \
-    --endowment="1000000000000" \
-    --endpoint="ws://substrate-node" \
-    --port="9944" \
-    --suri="//Alice" \
+    --contract-source=$CONTRACT_SOURCE \
+    --wasm=$WASM \
+    --constructor=$CONSTRUCTOR \
+    --contract-args="$CONTRACT_ARGS" \
+    --endowment=$ENDOWMENT \
+    --endpoint=$SUBSTRATE_ENDPOINT \
+    --port=$SUBSTRATE_PORT \
+    --suri=$SURI \
     --use-salt \
     --build ||
     exit 1)
