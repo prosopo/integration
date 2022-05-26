@@ -24,6 +24,7 @@ DEPLOY_PROTOCOL=false
 DEPLOY_DAPP=false
 RESTART_CHAIN=false
 TEST_DB=false
+ENV_FILE=.env
 
 for arg in "$@"; do
   echo "$arg"
@@ -54,6 +55,7 @@ for arg in "$@"; do
     ;;
   --test-db)
     TEST_DB=true
+    ENV_FILE=.env.test
     shift # Remove --test-db from `$@`
     ;;
   -h | --help)
@@ -64,12 +66,6 @@ for arg in "$@"; do
     ;;
   esac
 done
-
-if [[ $TEST_DB == true ]]; then
-  ENV_FILE=.env.test
-else
-  ENV_FILE=.env
-fi
 
 echo "INSTALL_PACKAGES: $INSTALL_PACKAGES"
 echo "BUILD_PROVIDER:   $BUILD_PROVIDER"
@@ -83,9 +79,14 @@ echo "ENV_FILE:         $ENV_FILE"
 # create an empty .env file
 touch $ENV_FILE
 
+# https://stackoverflow.com/questions/2320564/sed-i-command-for-in-place-editing-to-work-with-both-gnu-sed-and-bsd-osx/38595160#38595160
+sedi () {
+    sed --version >/dev/null 2>&1 && sed -i "$@" || sed -i "" "$@"
+}
+
 # Docker compose doesn't like .env variables that contain spaces and are not quoted
 # https://stackoverflow.com/questions/69512549/key-cannot-contain-a-space-error-while-running-docker-compose
-sed -i -e "s/PROVIDER_MNEMONIC=\"*\([a-z ]*\)\"*/PROVIDER_MNEMONIC=\"\1\"/g" $ENV_FILE
+sedi -e "s/PROVIDER_MNEMONIC=\"*\([a-z ]*\)\"*/PROVIDER_MNEMONIC=\"\1\"/g" $ENV_FILE
 
 # spin up the substrate node
 if [[ $BUILD_SUBSTRATE == true ]]; then
@@ -105,18 +106,17 @@ fi
 ./scripts/start-substrate.sh "${START_SUBSTRATE_ARGS[@]}" || exit 1
 
 # start the database container
-if [[ $TEST_DB == true ]]; then
-  ./scripts/start-db.sh --test-db
-else
-  ./scripts/start-db.sh
-fi
+./scripts/start-db.sh --env-file=$ENV_FILE
 
 docker compose up provider-api -d
+CONTAINER_NAME=$(docker ps -q -f name=provider-api)
+
+if [[ $TEST_DB == true ]]; then
+  docker cp .database_accounts.json $CONTAINER_NAME:/usr/src/database_accounts.json
+fi
 
 # return .env to its original state
-sed -i -e 's/PROVIDER_MNEMONIC="\([a-z ]*\)"/PROVIDER_MNEMONIC=\1/g' $ENV_FILE
-
-CONTAINER_NAME=$(docker ps -q -f name=provider-api)
+sedi -e 's/PROVIDER_MNEMONIC="\([a-z ]*\)"/PROVIDER_MNEMONIC=\1/g' $ENV_FILE
 
 if [[ $INSTALL_PACKAGES == true ]]; then
   docker exec -t "$CONTAINER_NAME" zsh -c 'cd /usr/src && yarn'
