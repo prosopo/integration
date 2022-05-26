@@ -147,13 +147,13 @@ if [[ $DEPLOY_PROTOCOL == true ]]; then
 fi
 
 if [[ $DEPLOY_DAPP == true ]]; then
-  PROTOCOL_CONTRACT_ADDRESS=$(grep "^CONTRACT_ADDRESS=.*" $ENV_FILE | cut -d '=' -f2)
-  DAPP_CONTRACT_ARGS_POPULATED=$(echo $DAPP_CONTRACT_ARGS | sed -e "s/\\\$PROTOCOL_CONTRACT_ADDRESS/$PROTOCOL_CONTRACT_ADDRESS/g")
+  # Make sure dapp args are up to date with most recent protocol contract address
+  echo "$DAPP_CONTRACT_ARGS" && sedi -e "s/([[:alnum:]]{48})/$CONTRACT_ADDRESS/g" "$ENV_FILE"
   DEPLOY_RESULT=$(./scripts/deploy-contract.sh \
     --contract-source="$DAPP_CONTRACT_SOURCE" \
     --wasm="$DAPP_WASM" \
     --constructor="$DAPP_CONSTRUCTOR" \
-    --contract-args="$DAPP_CONTRACT_ARGS_POPULATED" \
+    --contract-args="$DAPP_CONTRACT_ARGS" \
     --endowment="$DAPP_ENDOWMENT" \
     --endpoint="$SUBSTRATE_ENDPOINT" \
     --port="$SUBSTRATE_PORT" \
