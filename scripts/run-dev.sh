@@ -17,6 +17,7 @@ USAGE
   exit 1
 }
 
+# Flags
 INSTALL_PACKAGES=false
 BUILD_SUBSTRATE=false
 BUILD_PROVIDER=false
@@ -55,7 +56,6 @@ for arg in "$@"; do
     ;;
   --test-db)
     TEST_DB=true
-    ENV_FILE=.env.test
     shift # Remove --test-db from `$@`
     ;;
   -h | --help)
@@ -79,14 +79,15 @@ echo "ENV_FILE:         $ENV_FILE"
 # create an empty .env file
 touch $ENV_FILE
 
-# https://stackoverflow.com/questions/2320564/sed-i-command-for-in-place-editing-to-work-with-both-gnu-sed-and-bsd-osx/38595160#38595160
-sedi () {
-    sed --version >/dev/null 2>&1 && sed -i "$@" || sed -i "" "$@"
-}
+# remove any duplicates in .env file
+cat $ENV_FILE | uniq >$ENV_FILE.tmp
+mv $ENV_FILE.tmp $ENV_FILE
+source $ENV_FILE
 
-# Docker compose doesn't like .env variables that contain spaces and are not quoted
-# https://stackoverflow.com/questions/69512549/key-cannot-contain-a-space-error-while-running-docker-compose
-sedi -e "s/PROVIDER_MNEMONIC=\"*\([a-z ]*\)\"*/PROVIDER_MNEMONIC=\"\1\"/g" $ENV_FILE
+# https://stackoverflow.com/questions/2320564/sed-i-command-for-in-place-editing-to-work-with-both-gnu-sed-and-bsd-osx/38595160#38595160
+sedi() {
+  sed --version >/dev/null 2>&1 && sed -i "$@" || sed -i "" "$@"
+}
 
 # spin up the substrate node
 if [[ $BUILD_SUBSTRATE == true ]]; then
@@ -96,12 +97,12 @@ else
 fi
 
 # start the substrate process as a background task
-START_SUBSTRATE_ARGS=( )
+START_SUBSTRATE_ARGS=()
 if [[ $RESTART_CHAIN == true ]]; then
-  START_SUBSTRATE_ARGS+=( --restart-chain )
+  START_SUBSTRATE_ARGS+=(--restart-chain)
 fi
 if [[ $TEST_DB == true ]]; then
-  START_SUBSTRATE_ARGS+=( --test-db )
+  START_SUBSTRATE_ARGS+=(--test-db)
 fi
 ./scripts/start-substrate.sh "${START_SUBSTRATE_ARGS[@]}" || exit 1
 
@@ -112,24 +113,61 @@ docker compose up provider-api -d
 CONTAINER_NAME=$(docker ps -q -f name=provider-api)
 
 if [[ $TEST_DB == true ]]; then
-  docker cp .database_accounts.json $CONTAINER_NAME:/usr/src/database_accounts.json
+  docker cp .database_accounts.json "$CONTAINER_NAME":/usr/src/database_accounts.json
 fi
 
-# return .env to its original state
-sedi -e 's/PROVIDER_MNEMONIC="\([a-z ]*\)"/PROVIDER_MNEMONIC=\1/g' $ENV_FILE
+docker compose up contracts -d
 
 if [[ $INSTALL_PACKAGES == true ]]; then
   docker exec -t "$CONTAINER_NAME" zsh -c 'cd /usr/src && yarn'
 fi
 
 if [[ $DEPLOY_PROTOCOL == true ]]; then
-  echo "Installing packages for protocol, building, and deploying contract"
-  docker exec -t "$CONTAINER_NAME" zsh -c "/usr/src/docker/dev.dockerfile.deploy.contract.and.store.account.sh /usr/src/protocol CONTRACT_ADDRESS"
+  DEPLOY_RESULT=$(./scripts/deploy-contract.sh \
+    --contract-source="$PROTOCOL_CONTRACT_SOURCE" \
+    --wasm="$PROTOCOL_WASM" \
+    --constructor="$PROTOCOL_CONSTRUCTOR" \
+    --contract-args="$PROTOCOL_CONTRACT_ARGS" \
+    --endowment="$PROTOCOL_ENDOWMENT" \
+    --endpoint="$SUBSTRATE_ENDPOINT" \
+    --port="$SUBSTRATE_PORT" \
+    --suri="$DEPLOYER_SURI" \
+    --use-salt \
+    --build)
+  CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | tail -1)
+  if [[ $CONTRACT_ADDRESS == "Contract failed to deploy" ]]; then
+    echo "$DEPLOY_RESULT"
+    exit 1
+  fi
+  echo "Protocol Contract Address: $CONTRACT_ADDRESS"
+  # Put the contract address in the env file in various places
+  grep -q "^CONTRACT_ADDRESS=.*" "$ENV_FILE" && sedi -e "s/^CONTRACT_ADDRESS=.*/CONTRACT_ADDRESS=$CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >>"$ENV_FILE"
+  grep -q "^REACT_APP_DAPP_CONTRACT_ADDRESS=.*" "$ENV_FILE" && sedi -e "s/^REACT_APP_DAPP_CONTRACT_ADDRESS=.*/REACT_APP_DAPP_CONTRACT_ADDRESS=$CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "REACT_APP_DAPP_CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >>"$ENV_FILE"
+  echo "$DAPP_CONTRACT_ARGS" && sedi -e "s/([[:alnum:]]{48})/$CONTRACT_ADDRESS/g" "$ENV_FILE"
 fi
 
 if [[ $DEPLOY_DAPP == true ]]; then
-  echo "Installing packages for dapp-example, building and deploying contract"
-  docker exec -t "$CONTAINER_NAME" zsh -c "/usr/src/docker/dev.dockerfile.deploy.contract.and.store.account.sh /usr/src/dapp-example DAPP_CONTRACT_ADDRESS"
+  # Make sure dapp args are up to date with most recent protocol contract address
+  echo "$DAPP_CONTRACT_ARGS" && sedi -e "s/([[:alnum:]]{48})/$CONTRACT_ADDRESS/g" "$ENV_FILE"
+  DEPLOY_RESULT=$(./scripts/deploy-contract.sh \
+    --contract-source="$DAPP_CONTRACT_SOURCE" \
+    --wasm="$DAPP_WASM" \
+    --constructor="$DAPP_CONSTRUCTOR" \
+    --contract-args="$DAPP_CONTRACT_ARGS" \
+    --endowment="$DAPP_ENDOWMENT" \
+    --endpoint="$SUBSTRATE_ENDPOINT" \
+    --port="$SUBSTRATE_PORT" \
+    --suri="$DEPLOYER_SURI" \
+    --use-salt \
+    --build)
+  DAPP_CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | tail -1)
+  if [[ $DAPP_CONTRACT_ADDRESS == "Contract failed to deploy" ]]; then
+    echo "$DEPLOY_RESULT"
+    exit 1
+  fi
+  echo "Dapp Example Contract Address: $DAPP_CONTRACT_ADDRESS"
+  # Put the contract address in the env file
+  grep -q "^DAPP_CONTRACT_ADDRESS=.*" "$ENV_FILE" && sedi -e "s/^DAPP_CONTRACT_ADDRESS=.*/DAPP_CONTRACT_ADDRESS=$DAPP_CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "DAPP_CONTRACT_ADDRESS=$DAPP_CONTRACT_ADDRESS" >>"$ENV_FILE"
 fi
 
 echo "Linking artifacts to core package and contract package"
