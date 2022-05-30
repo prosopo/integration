@@ -123,13 +123,18 @@ fi
 
 if [[ $DEPLOY_PROTOCOL == true ]]; then
   docker compose up protocol-build
-  PROTOCOL_CONTAINER_NAME=$(docker ps -qa -f name=protocol)
+  PROTOCOL_CONTAINER_NAME=$(docker ps -qa -f name=protocol | head -n 1)
   docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.protocol" || exit 1
+  # TODO: Remove. Temporarily replicating redspot functionality so script continues to function
+  mkdir -p ./protocol/artifacts
+  docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/metadata.json" ./protocol/artifacts/prosopo.json || exit 1
+  docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/prosopo.contract" ./protocol/artifacts/prosopo.contract || exit 1
+  docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/prosopo.wasm" ./protocol/artifacts/prosopo.wasm || exit 1
 fi
 
 if [[ $DEPLOY_DAPP == true ]]; then
   docker compose run -e "$(cat "$ENV_FILE.protocol")" dapp-build /usr/src/docker/contracts.dockerfile.deploy.dapp.sh
-  DAPP_CONTAINER_NAME=$(docker ps -qa -f name=dapp)
+  DAPP_CONTAINER_NAME=$(docker ps -qa -f name=dapp | head -n 1)
   docker cp "$DAPP_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.dapp" || exit 1
 fi
 
