@@ -1,20 +1,29 @@
 version: '3.4'
 services:
-  contracts:
-    image: paritytech/contracts-ci-linux:latest
+  protocol-build:
+    image: prosopo/protocol-build:latest
     volumes:
       - type: bind
         source: ./protocol
         target: /usr/src/protocol
+    build:
+      context: .
+      dockerfile: ./docker/contracts.protocol.dockerfile
+    links:
+      - substrate-node
+    #command: "tail -f /dev/null"
+  dapp-build:
+    image: prosopo/dapp-build:latest
+    volumes:
       - type: bind
         source: ./dapp-example
         target: /usr/src/dapp-example
-      - type: bind
-        source: ./docker
-        target: /usr/src/docker
-    command: "tail -f /dev/null"
+    build:
+      context: .
+      dockerfile: ./docker/contracts.dapp.dockerfile
     links:
       - substrate-node
+    #command: "tail -f /dev/null"
   provider-api:
     build:
       context: .
@@ -27,8 +36,9 @@ services:
         target: /usr/src/
 
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_DATABASE=prosopo
     links:
       - substrate-node
       - provider-db
@@ -38,10 +48,6 @@ services:
     image: ${DATABASE_IMAGE}
     volumes:
       - ./db/:/data/db
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
     ports:
       - "27017:27017"
   substrate-node:

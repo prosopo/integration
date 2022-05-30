@@ -110,65 +110,27 @@ fi
 ./scripts/start-db.sh --env-file=$ENV_FILE
 
 docker compose up provider-api -d
+
 CONTAINER_NAME=$(docker ps -q -f name=provider-api)
 
 if [[ $TEST_DB == true ]]; then
   docker cp .database_accounts.json "$CONTAINER_NAME":/usr/src/database_accounts.json
 fi
 
-docker compose up contracts -d
-
 if [[ $INSTALL_PACKAGES == true ]]; then
   docker exec -t "$CONTAINER_NAME" zsh -c 'cd /usr/src && yarn'
 fi
 
 if [[ $DEPLOY_PROTOCOL == true ]]; then
-  DEPLOY_RESULT=$(./scripts/deploy-contract.sh \
-    --contract-source="$PROTOCOL_CONTRACT_SOURCE" \
-    --wasm="$PROTOCOL_WASM" \
-    --constructor="$PROTOCOL_CONSTRUCTOR" \
-    --contract-args="$PROTOCOL_CONTRACT_ARGS" \
-    --endowment="$PROTOCOL_ENDOWMENT" \
-    --endpoint="$SUBSTRATE_ENDPOINT" \
-    --port="$SUBSTRATE_PORT" \
-    --suri="$DEPLOYER_SURI" \
-    --use-salt \
-    --build)
-  CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | tail -1)
-  if [[ $CONTRACT_ADDRESS == "Contract failed to deploy" ]]; then
-    echo "$DEPLOY_RESULT"
-    exit 1
-  fi
-  echo "Protocol Contract Address: $CONTRACT_ADDRESS"
-  # Put the contract address in the env file in various places
-  grep -q "^CONTRACT_ADDRESS=.*" "$ENV_FILE" && sedi -e "s/^CONTRACT_ADDRESS=.*/CONTRACT_ADDRESS=$CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >>"$ENV_FILE"
-  grep -q "^REACT_APP_DAPP_CONTRACT_ADDRESS=.*" "$ENV_FILE" && sedi -e "s/^REACT_APP_DAPP_CONTRACT_ADDRESS=.*/REACT_APP_DAPP_CONTRACT_ADDRESS=$CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "REACT_APP_DAPP_CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >>"$ENV_FILE"
-  REPLACE=$(echo "$DAPP_CONTRACT_ARGS" | grep -oP '([A-Za-z0-9]{48})')
-  sed "s/$REPLACE/$CONTRACT_ADDRESS/" "$ENV_FILE"  > "$ENV_FILE.tmp" && mv "$ENV_FILE.tmp" "$ENV_FILE"
+  docker compose up protocol-build
+  PROTOCOL_CONTAINER_NAME=$(docker ps -qa -f name=protocol)
+  docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.protocol" || exit 1
 fi
 
 if [[ $DEPLOY_DAPP == true ]]; then
-  # Make sure dapp args are up to date with most recent protocol contract address
-  echo "$DAPP_CONTRACT_ARGS" && sedi -e "s/([[:alnum:]]{48})/$CONTRACT_ADDRESS/g" "$ENV_FILE"
-  DEPLOY_RESULT=$(./scripts/deploy-contract.sh \
-    --contract-source="$DAPP_CONTRACT_SOURCE" \
-    --wasm="$DAPP_WASM" \
-    --constructor="$DAPP_CONSTRUCTOR" \
-    --contract-args="$DAPP_CONTRACT_ARGS" \
-    --endowment="$DAPP_ENDOWMENT" \
-    --endpoint="$SUBSTRATE_ENDPOINT" \
-    --port="$SUBSTRATE_PORT" \
-    --suri="$DEPLOYER_SURI" \
-    --use-salt \
-    --build)
-  DAPP_CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | tail -1)
-  if [[ $DAPP_CONTRACT_ADDRESS == "Contract failed to deploy" ]]; then
-    echo "$DEPLOY_RESULT"
-    exit 1
-  fi
-  echo "Dapp Example Contract Address: $DAPP_CONTRACT_ADDRESS"
-  # Put the contract address in the env file
-  grep -q "^DAPP_CONTRACT_ADDRESS=.*" "$ENV_FILE" && sedi -e "s/^DAPP_CONTRACT_ADDRESS=.*/DAPP_CONTRACT_ADDRESS=$DAPP_CONTRACT_ADDRESS/g" "$ENV_FILE" || echo "DAPP_CONTRACT_ADDRESS=$DAPP_CONTRACT_ADDRESS" >>"$ENV_FILE"
+  docker compose run -e "$(cat "$ENV_FILE.protocol")" dapp-build /usr/src/docker/contracts.dockerfile.deploy.dapp.sh
+  DAPP_CONTAINER_NAME=$(docker ps -qa -f name=dapp)
+  docker cp "$DAPP_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.dapp" || exit 1
 fi
 
 echo "Linking artifacts to core package and contract package"
