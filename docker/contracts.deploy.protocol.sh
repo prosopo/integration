@@ -1,6 +1,6 @@
 #!/bin/bash
 tty=$(readlink /proc/$$/fd/2)
-DEPLOY_RESULT=$(/usr/src/docker/contracts.dockerfile.deploy-contract.sh \
+DEPLOY_RESULT=$(/usr/src/docker/contracts.deploy-contract.sh \
   --contract-source="$PROTOCOL_CONTRACT_SOURCE" \
   --wasm="$PROTOCOL_CONTRACT_WASM" \
   --constructor="$PROTOCOL_CONTRACT_CONSTRUCTOR" \

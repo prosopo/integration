@@ -7,8 +7,8 @@ services:
         source: ./protocol
         target: /usr/src/protocol
     build:
-      context: .
-      dockerfile: ./docker/contracts.protocol.dockerfile
+      context: ./docker/
+      dockerfile: contracts.protocol.dockerfile
     links:
       - substrate-node
     #command: "tail -f /dev/null"
@@ -19,15 +19,15 @@ services:
         source: ./dapp-example
         target: /usr/src/dapp-example
     build:
-      context: .
-      dockerfile: ./docker/contracts.dapp.dockerfile
+      context: ./docker/
+      dockerfile: contracts.dapp.dockerfile
     links:
       - substrate-node
     #command: "tail -f /dev/null"
   provider-api:
     build:
-      context: .
-      dockerfile: ./docker/dev.dockerfile
+      context: ./docker/
+      dockerfile: dev.dockerfile
     ports:
       - "3000:3000"
     volumes:
