@@ -1,7 +1,7 @@
 FROM paritytech/contracts-ci-linux:latest as builder
 RUN mkdir -p /usr/src/docker
-COPY ./docker/contracts.dockerfile.deploy.protocol.sh /usr/src/docker/
-COPY ./docker/contracts.dockerfile.deploy-contract.sh /usr/src/docker/
+COPY ./docker/contracts.deploy.protocol.sh /usr/src/docker/
+COPY ./docker/contracts.deploy.contract.sh /usr/src/docker/
 COPY ./protocol/contracts/ /usr/src/build/contracts
 COPY ./protocol/crates/ /usr/src/build/crates
 ENV SUBSTRATE_ENDPOINT=ws://substrate-node
@@ -19,5 +19,5 @@ WORKDIR /usr/src/build/contracts
 RUN /usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo metadata --format-version 1 --manifest-path Cargo.toml
 #RUN cargo +nightly contract build
 WORKDIR /usr/src
-RUN chmod +x /usr/src/docker/contracts.dockerfile.deploy.protocol.sh
-CMD ["bash", "/usr/src/docker/contracts.dockerfile.deploy.protocol.sh"]
+RUN chmod +x /usr/src/docker/contracts.deploy.protocol.sh
+CMD ["bash", "/usr/src/docker/contracts.deploy.protocol.sh"]

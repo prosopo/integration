@@ -134,16 +134,16 @@ if [ $DEPLOY_PROTOCOL == true ] || [ $DEPLOY_DAPP == true ]; then
   fi
 
   if [[ $DEPLOY_DAPP == true ]]; then
-    docker compose run -e echo "$(<.env.protocol)" dapp-build /usr/src/docker/contracts.dockerfile.deploy.dapp.sh
+    docker compose run -e "$(cat "$ENV_FILE.protocol")" dapp-build /usr/src/docker/contracts.deploy.dapp.sh
     DAPP_CONTAINER_NAME=$(docker ps -qa -f name=dapp | head -n 1)
     docker cp "$DAPP_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.dapp" || exit 1
   fi
 
-  # Put the new contract addresses in a new .env file based on a template .env.tmp
+  # Put the new contract addresses in a new .env file based on a template .env.txt
   PROTOCOL_CONTRACT_ADDRESS=$(echo "$(<.env.protocol)" | cut -d '=' -f2)
   DAPP_CONTRACT_ADDRESS=$(echo "$(<.env.dapp)" | cut -d '=' -f2)
-  cp env.tmp $ENV_FILE
-  sed "s/%CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/;s/%DAPP_CONTRACT_ADDRESS%/$DAPP_CONTRACT_ADDRESS/" "$ENV_FILE" >$ENV_FILE
+  cp env.txt $ENV_FILE
+  sed -e "s/%CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/g;s/%DAPP_CONTRACT_ADDRESS%/$DAPP_CONTRACT_ADDRESS/g" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE
 fi
 
 echo "Linking artifacts to core package and contract package"
@@ -155,7 +155,7 @@ docker exec -it "$CONTAINER_NAME" zsh -c 'cp -f /usr/src/protocol/artifacts/pros
 
 if [[ $BUILD_PROVIDER == true ]]; then
   echo "Generating provider mnemonic"
-  docker exec -it "$CONTAINER_NAME" zsh -c '/usr/src/docker/dev.dockerfile.generate.provider.mnemonic.sh /usr/src/protocol'
+  docker exec -it "$CONTAINER_NAME" zsh -c '/usr/src/docker/dev.generate.provider.mnemonic.sh /usr/src/protocol'
   echo "Sending funds to the Provider account and registering the provider"
   docker exec -it --env-file $ENV_FILE "$CONTAINER_NAME" zsh -c 'yarn && yarn build && cd /usr/src/packages/provider && yarn setup provider && yarn setup dapp'
 fi

@@ -3,7 +3,7 @@
 DAPP_CONTRACT_ARGS_PROTOCOL_CONTRACT_ADDRESS=$CONTRACT_ADDRESS
 echo "Protocol contract address: $CONTRACT_ADDRESS"
 tty=$(readlink /proc/$$/fd/2)
-DEPLOY_RESULT=$(/usr/src/docker/contracts.dockerfile.deploy-contract.sh \
+DEPLOY_RESULT=$(/usr/src/docker/contracts.deploy.contract.sh \
   --contract-source="$DAPP_CONTRACT_SOURCE" \
   --wasm="$DAPP_CONTRACT_WASM" \
   --constructor="$DAPP_CONTRACT_CONSTRUCTOR" \

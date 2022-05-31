@@ -26,8 +26,8 @@ services:
     #command: "tail -f /dev/null"
   provider-api:
     build:
-      context: .
-      dockerfile: ./docker/dev.dockerfile
+      context: ./docker/
+      dockerfile: dev.dockerfile
     ports:
       - "3000:3000"
     volumes:
