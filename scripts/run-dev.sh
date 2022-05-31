@@ -121,21 +121,29 @@ if [[ $INSTALL_PACKAGES == true ]]; then
   docker exec -t "$CONTAINER_NAME" zsh -c 'cd /usr/src && yarn'
 fi
 
-if [[ $DEPLOY_PROTOCOL == true ]]; then
-  docker compose up protocol-build
-  PROTOCOL_CONTAINER_NAME=$(docker ps -qa -f name=protocol | head -n 1)
-  docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.protocol" || exit 1
-  # TODO: Remove. Temporarily replicating redspot functionality so script continues to function
-  mkdir -p ./protocol/artifacts
-  docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/metadata.json" ./protocol/artifacts/prosopo.json || exit 1
-  docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/prosopo.contract" ./protocol/artifacts/prosopo.contract || exit 1
-  docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/prosopo.wasm" ./protocol/artifacts/prosopo.wasm || exit 1
-fi
+if [ $DEPLOY_PROTOCOL == true ] || [ $DEPLOY_DAPP == true ]; then
+  if [[ $DEPLOY_PROTOCOL == true ]]; then
+    docker compose up protocol-build
+    PROTOCOL_CONTAINER_NAME=$(docker ps -qa -f name=protocol | head -n 1)
+    docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.protocol" || exit 1
+    # TODO: Remove. Temporarily replicating redspot functionality so script continues to function
+    mkdir -p ./protocol/artifacts
+    docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/metadata.json" ./protocol/artifacts/prosopo.json || exit 1
+    docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/prosopo.contract" ./protocol/artifacts/prosopo.contract || exit 1
+    docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/prosopo.wasm" ./protocol/artifacts/prosopo.wasm || exit 1
+  fi
 
-if [[ $DEPLOY_DAPP == true ]]; then
-  docker compose run -e "$(cat "$ENV_FILE.protocol")" dapp-build /usr/src/docker/contracts.dockerfile.deploy.dapp.sh
-  DAPP_CONTAINER_NAME=$(docker ps -qa -f name=dapp | head -n 1)
-  docker cp "$DAPP_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.dapp" || exit 1
+  if [[ $DEPLOY_DAPP == true ]]; then
+    docker compose run -e echo "$(<.env.protocol)" dapp-build /usr/src/docker/contracts.dockerfile.deploy.dapp.sh
+    DAPP_CONTAINER_NAME=$(docker ps -qa -f name=dapp | head -n 1)
+    docker cp "$DAPP_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.dapp" || exit 1
+  fi
+
+  # Put the new contract addresses in a new .env file based on a template .env.tmp
+  PROTOCOL_CONTRACT_ADDRESS=$(echo "$(<.env.protocol)" | cut -d '=' -f2)
+  DAPP_CONTRACT_ADDRESS=$(echo "$(<.env.dapp)" | cut -d '=' -f2)
+  cp env.tmp $ENV_FILE
+  sed "s/%CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/;s/%DAPP_CONTRACT_ADDRESS%/$DAPP_CONTRACT_ADDRESS/" "$ENV_FILE" >$ENV_FILE
 fi
 
 echo "Linking artifacts to core package and contract package"
