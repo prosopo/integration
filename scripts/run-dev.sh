@@ -155,7 +155,7 @@ docker exec -it "$CONTAINER_NAME" zsh -c 'cp -f /usr/src/protocol/artifacts/pros
 
 if [[ $BUILD_PROVIDER == true ]]; then
   echo "Generating provider mnemonic"
-  docker exec -it "$CONTAINER_NAME" zsh -c '/usr/src/docker/dev.generate.provider.mnemonic.sh /usr/src/protocol'
+  docker exec -it "$CONTAINER_NAME" zsh -c '/usr/src/docker/dev.generate.provider.mnemonic.sh /usr/src/packages/provider'
   echo "Sending funds to the Provider account and registering the provider"
   docker exec -it --env-file $ENV_FILE "$CONTAINER_NAME" zsh -c 'yarn && yarn build && cd /usr/src/packages/provider && yarn setup provider && yarn setup dapp'
 fi
