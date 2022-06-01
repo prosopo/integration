@@ -126,3 +126,6 @@ contracts/target/
 
 /yarn.lock
 package-lock.json
+
+/.chain-test/
+/.db-test/
