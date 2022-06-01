@@ -82,7 +82,9 @@ touch $ENV_FILE
 # remove any duplicates in .env file
 cat $ENV_FILE | uniq >$ENV_FILE.tmp
 mv $ENV_FILE.tmp $ENV_FILE
-source $ENV_FILE
+
+# create a new version of the .env based on a template
+cp "${ENV_FILE:1}".txt $ENV_FILE
 
 # https://stackoverflow.com/questions/2320564/sed-i-command-for-in-place-editing-to-work-with-both-gnu-sed-and-bsd-osx/38595160#38595160
 sedi() {
@@ -110,7 +112,6 @@ fi
 ./scripts/start-db.sh --env-file=$ENV_FILE
 
 docker compose up provider-api -d
-
 CONTAINER_NAME=$(docker ps -q -f name=provider-api)
 
 if [[ $TEST_DB == true ]]; then
@@ -121,30 +122,29 @@ if [[ $INSTALL_PACKAGES == true ]]; then
   docker exec -t "$CONTAINER_NAME" zsh -c 'cd /usr/src && yarn'
 fi
 
-if [ $DEPLOY_PROTOCOL == true ] || [ $DEPLOY_DAPP == true ]; then
-  if [[ $DEPLOY_PROTOCOL == true ]]; then
-    docker compose up protocol-build
-    PROTOCOL_CONTAINER_NAME=$(docker ps -qa -f name=protocol | head -n 1)
-    docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.protocol" || exit 1
-    # TODO: Remove. Temporarily replicating redspot functionality so script continues to function
-    mkdir -p ./protocol/artifacts
-    docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/metadata.json" ./protocol/artifacts/prosopo.json || exit 1
-    docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/prosopo.contract" ./protocol/artifacts/prosopo.contract || exit 1
-    docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/prosopo.wasm" ./protocol/artifacts/prosopo.wasm || exit 1
-  fi
-
-  if [[ $DEPLOY_DAPP == true ]]; then
-    docker compose run -e "$(cat "$ENV_FILE.protocol")" dapp-build /usr/src/docker/contracts.deploy.dapp.sh
-    DAPP_CONTAINER_NAME=$(docker ps -qa -f name=dapp | head -n 1)
-    docker cp "$DAPP_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.dapp" || exit 1
-  fi
-
-  # Put the new contract addresses in a new .env file based on a template .env.txt
-  PROTOCOL_CONTRACT_ADDRESS=$(echo "$(<.env.protocol)" | cut -d '=' -f2)
-  DAPP_CONTRACT_ADDRESS=$(echo "$(<.env.dapp)" | cut -d '=' -f2)
-  cp env.txt $ENV_FILE
-  sed -e "s/%CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/g;s/%DAPP_CONTRACT_ADDRESS%/$DAPP_CONTRACT_ADDRESS/g" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE
+if [[ $DEPLOY_PROTOCOL == true ]]; then
+  docker compose up protocol-build
+  PROTOCOL_CONTAINER_NAME=$(docker ps -qa -f name=protocol | head -n 1)
+  docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.protocol" || exit 1
+  # TODO: Remove. Temporarily replicating redspot functionality so script continues to function
+  mkdir -p ./protocol/artifacts
+  docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/metadata.json" ./protocol/artifacts/prosopo.json || exit 1
+  docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/prosopo.contract" ./protocol/artifacts/prosopo.contract || exit 1
+  docker cp "$PROTOCOL_CONTAINER_NAME:/usr/src/protocol/contracts/target/ink/prosopo.wasm" ./protocol/artifacts/prosopo.wasm || exit 1
 fi
+
+if [[ $DEPLOY_DAPP == true ]]; then
+  docker compose run -e "$(cat "$ENV_FILE.protocol")" dapp-build /usr/src/docker/contracts.deploy.dapp.sh
+  DAPP_CONTAINER_NAME=$(docker ps -qa -f name=dapp | head -n 1)
+  docker cp "$DAPP_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.dapp" || exit 1
+fi
+
+# Put the new contract addresses in a new .env file based on a template .env.txt
+PROTOCOL_CONTRACT_ADDRESS=$(echo "$(<.env.protocol)" | cut -d '=' -f2)
+DAPP_CONTRACT_ADDRESS=$(echo "$(<.env.dapp)" | cut -d '=' -f2)
+sed -e "s/%CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/g;s/%DAPP_CONTRACT_ADDRESS%/$DAPP_CONTRACT_ADDRESS/g" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE
+sed -e "s/%DAPP_CONTRACT_ARGS_PROTOCOL_CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/g;" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE
+
 
 echo "Linking artifacts to core package and contract package"
 docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/provider/artifacts'
