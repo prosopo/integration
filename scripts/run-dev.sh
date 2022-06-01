@@ -112,7 +112,6 @@ fi
 ./scripts/start-db.sh --env-file=$ENV_FILE
 
 docker compose up provider-api -d
-
 CONTAINER_NAME=$(docker ps -q -f name=provider-api)
 
 if [[ $TEST_DB == true ]]; then
