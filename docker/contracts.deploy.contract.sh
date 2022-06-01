@@ -81,13 +81,11 @@ for arg in "$@"; do
   esac
 done
 
-CONTRACTS_CONTAINER=$(docker ps -q -f name=integration-contracts)
-echo "Contract Container ID:     $CONTRACTS_CONTAINER"
 echo "Contract Source:           $CONTRACT_SOURCE"
 
 if [[ $BUILD == true ]]; then
   echo "Building contract: $CONTRACT_SOURCE"
-  docker exec "$CONTRACTS_CONTAINER" bash -c "cd $CONTRACT_SOURCE && cargo +nightly contract build"
+  cd "$CONTRACT_SOURCE" && cargo +nightly contract build
 fi
 
 # Generate deploy command
@@ -99,7 +97,8 @@ if [[ $USE_SALT == true ]]; then
 fi
 
 # Deploy the contract
-DEPLOY_RESULT=$(docker exec -w "$CONTRACT_SOURCE" "$CONTRACTS_CONTAINER" bash -c "$CMDSALT")
+DEPLOY_RESULT=$(eval "$CMDSALT")
+echo $DEPLOY_RESULT
 if [[ $(echo "$DEPLOY_RESULT" | grep -c 'ExtrinsicSuccess') == 1 ]]; then
   CONTRACT_ADDRESS=$(echo "$DEPLOY_RESULT" | grep -oP 'to: [A-Za-z0-9]*' | tail -1 | cut -d ' ' -f2)
   echo "$CONTRACT_ADDRESS"

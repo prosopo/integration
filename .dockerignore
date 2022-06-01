@@ -4,4 +4,4 @@ db
 .idea
 node_modules
 **/node_modules
-**/contracts
+**/target
