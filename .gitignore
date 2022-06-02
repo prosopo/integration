@@ -129,3 +129,6 @@ package-lock.json
 
 /.chain-test/
 /.db-test/
+
+/database_accounts.json
+/.database_accounts.json
