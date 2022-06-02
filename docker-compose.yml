@@ -28,13 +28,12 @@ services:
     build:
       context: ./docker/
       dockerfile: dev.dockerfile
-    ports:
-      - "3000:3000"
+    # ports:
+    #   - "3000:3000"
     volumes:
       - type: bind
         source: .
         target: /usr/src/
-
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root

@@ -18,7 +18,7 @@
     "setup": "yarn workspace @prosopo/provider run setup",
     "start": "yarn workspace @prosopo/provider run start",
     "fix-typescript-references": "utils-typescript-references",
-    "test": "yarn workspace @prosopo/provider run test",
+    "test": "yarn run test:mock",
     "test:mocha": "yarn workspace @prosopo/provider run test:mocha",
     "test:mock": "./scripts/test.sh",
     "lint": "yarn workspace @prosopo/provider run eslint --fix src && yarn workspace @prosopo/contract run eslint --fix src",
