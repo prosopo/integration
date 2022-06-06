@@ -17,6 +17,7 @@
     "build:client-example": "yarn workspace client-example run build",
     "setup": "yarn workspace @prosopo/provider run setup",
     "start": "yarn workspace @prosopo/provider run start",
+    "provider": "yarn workspace @prosopo/provider run cli",
     "fix-typescript-references": "utils-typescript-references",
     "test": "yarn run test:mock",
     "test:mocha": "yarn workspace @prosopo/provider run test:mocha",
