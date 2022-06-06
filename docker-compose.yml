@@ -24,25 +24,6 @@ services:
     links:
       - substrate-node
     #command: "tail -f /dev/null"
-  provider-api:
-    build:
-      context: ./docker/
-      dockerfile: dev.dockerfile
-    # ports:
-    #   - "3000:3000"
-    volumes:
-      - type: bind
-        source: .
-        target: /usr/src/
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=root
-      - MONGO_INITDB_DATABASE=prosopo
-    links:
-      - substrate-node
-      - provider-db
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
   provider-db:
     image: ${DATABASE_IMAGE}
     volumes:

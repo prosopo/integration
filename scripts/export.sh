@@ -38,10 +38,10 @@ for arg in "$@"; do
   esac
 done
 
-if [[ $POPULATE == true ]]; then
-  PROVIDER_CONTAINER_NAME=$(docker ps -q -f name=provider-api)
-  docker exec --env-file $ENV_FILE -it $PROVIDER_CONTAINER_NAME bash -c 'yarn populate-data'
-fi
+# if [[ $POPULATE == true ]]; then
+#   PROVIDER_CONTAINER_NAME=$(docker ps -q -f name=provider-api)
+#   docker exec --env-file $ENV_FILE -it $PROVIDER_CONTAINER_NAME bash -c 'yarn populate-data'
+# fi
 
 if [[ $TEST_DB == true ]]; then
   ./scripts/export-chain.sh --test-db

@@ -8,7 +8,6 @@ function usage() {
     Options:
         --install-packages:   install all yarn packages
         --build-substrate:    rebuild the substrate image from scratch
-        --build-provider:     build the provider library and setup dummy data
         --deploy-protocol:    deploy the prosopo protocol contract
         --deploy-dapp:        deploy the dapp-example contract
         --restart-chain:      restart the substrate chain
@@ -20,7 +19,6 @@ USAGE
 # Flags
 INSTALL_PACKAGES=false
 BUILD_SUBSTRATE=false
-BUILD_PROVIDER=false
 DEPLOY_PROTOCOL=false
 DEPLOY_DAPP=false
 RESTART_CHAIN=false
@@ -41,10 +39,6 @@ for arg in "$@"; do
   --restart-chain)
     RESTART_CHAIN=true
     shift # Remove --restart-chain from `$@`
-    ;;
-  --build-provider)
-    BUILD_PROVIDER=true
-    shift # Remove --build_provider from `$@`
     ;;
   --deploy-protocol)
     DEPLOY_PROTOCOL=true
@@ -68,7 +62,6 @@ for arg in "$@"; do
 done
 
 echo "INSTALL_PACKAGES: $INSTALL_PACKAGES"
-echo "BUILD_PROVIDER:   $BUILD_PROVIDER"
 echo "BUILD_SUBSTRATE:  $BUILD_SUBSTRATE"
 echo "DEPLOY_PROTOCOL:  $DEPLOY_PROTOCOL"
 echo "DEPLOY_DAPP:      $DEPLOY_DAPP"
@@ -111,17 +104,6 @@ fi
 # start the database container
 ./scripts/start-db.sh --env-file=$ENV_FILE
 
-docker compose up provider-api -d
-CONTAINER_NAME=$(docker ps -q -f name=provider-api)
-
-if [[ $TEST_DB == true ]]; then
-  docker cp .database_accounts.json "$CONTAINER_NAME":/usr/src/database_accounts.json
-fi
-
-if [[ $INSTALL_PACKAGES == true ]]; then
-  docker exec -t "$CONTAINER_NAME" zsh -c 'cd /usr/src && yarn'
-fi
-
 if [[ $DEPLOY_PROTOCOL == true ]]; then
   docker compose up protocol-build
   PROTOCOL_CONTAINER_NAME=$(docker ps -qa -f name=protocol | head -n 1)
@@ -145,20 +127,22 @@ DAPP_CONTRACT_ADDRESS=$(echo "$(<.env.dapp)" | cut -d '=' -f2)
 sed -e "s/%CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/g;s/%DAPP_CONTRACT_ADDRESS%/$DAPP_CONTRACT_ADDRESS/g" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE
 sed -e "s/%DAPP_CONTRACT_ARGS_PROTOCOL_CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/g;" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE
 
+# TODO: move .env to .env.dev.
+# mv $ENV_FILE $ENV_FILE.dev
 
-echo "Linking artifacts to core package and contract package"
-docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/provider/artifacts'
-docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/contract/artifacts'
+# echo "Linking artifacts to core package and contract package"
+# docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/provider/artifacts'
+# docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/contract/artifacts'
 
-echo "Copy protocol/artifacts/prosopo.json to packages/contract/src/abi/prosopo.json"
-docker exec -it "$CONTAINER_NAME" zsh -c 'cp -f /usr/src/protocol/artifacts/prosopo.json /usr/src/packages/contract/src/abi/prosopo.json'
+# echo "Copy protocol/artifacts/prosopo.json to packages/contract/src/abi/prosopo.json"
+# docker exec -it "$CONTAINER_NAME" zsh -c 'cp -f /usr/src/protocol/artifacts/prosopo.json /usr/src/packages/contract/src/abi/prosopo.json'
 
-if [[ $BUILD_PROVIDER == true ]]; then
-  echo "Generating provider mnemonic"
-  docker exec -it "$CONTAINER_NAME" zsh -c '/usr/src/docker/dev.generate.provider.mnemonic.sh /usr/src/packages/provider'
-  echo "Sending funds to the Provider account and registering the provider"
-  docker exec -it --env-file $ENV_FILE "$CONTAINER_NAME" zsh -c 'yarn && yarn build && cd /usr/src/packages/provider && yarn setup provider && yarn setup dapp'
-fi
+# if [[ $BUILD_PROVIDER == true ]]; then
+#   echo "Generating provider mnemonic"
+#   docker exec -it "$CONTAINER_NAME" zsh -c '/usr/src/docker/dev.generate.provider.mnemonic.sh /usr/src/packages/provider'
+#   echo "Sending funds to the Provider account and registering the provider"
+#   docker exec -it --env-file $ENV_FILE "$CONTAINER_NAME" zsh -c 'yarn && yarn build && cd /usr/src/packages/provider && yarn setup provider && yarn setup dapp'
+# fi
 
-echo "Dev env up! You can now interact with the provider-api."
-docker exec -it --env-file $ENV_FILE "$CONTAINER_NAME" zsh
+echo "Dev env up!"
+# docker exec -it --env-file $ENV_FILE "$CONTAINER_NAME" zsh

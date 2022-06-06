@@ -41,6 +41,7 @@
     "@polkadot/api-augment": "7.12.1",
     "@polkadot/apps-config": "0.109.1",
     "@polkadot/keyring": "8.5.1",
+    "@polkadot/rpc-provider": "7.12.1",
     "@polkadot/types": "7.12.1",
     "@polkadot/networks": "8.5.1",
     "@polkadot/util": "8.5.1",
