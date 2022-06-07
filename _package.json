@@ -28,15 +28,16 @@
   },
   "private": true,
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=14.0.0"
   },
+  "packageManager": "yarn@3.2.0",
   "workspaces": [
     "client-example",
     "packages/*"
   ],
-  "resolutions": {},
   "devDependencies": {
-    "depcheck": "^1.4.3"
+    "@rushstack/eslint-patch": "^1.0.6",
+    "@typescript-eslint/parser": "^5.14.0"
   },
   "description": "Integrates protocol and provider for development purposes",
   "bugs": {
