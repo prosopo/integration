@@ -8,7 +8,7 @@
     "url": "git+https://github.com/prosopo-io/integration.git"
   },
   "scripts": {
-    "clean": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' + && find . -name \"build\" -type d -prune -exec rm -rf '{}' + && find . -name \"package-lock.json\" -type f -delete",
+    "clean": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' + && find . -name \"dist\" -type d -prune -exec rm -rf '{}' + && find . -name \"package-lock.json\" -type f -delete",
     "build": "npm run build:contract && npm run build:provider && npm run build:procaptcha && npm run build:procaptcha-react",
     "build:contract": "npm -w @prosopo/contract run clean && npm -w @prosopo/contract run build",
     "build:provider": "npm -w @prosopo/provider run clean && npm -w @prosopo/provider run build",
