@@ -48,8 +48,8 @@
       "esnext",
     ],
 
-    "paths": {
-        "@prosopo/*": ["./packages/*"]
-    }
+    // "paths": {
+    //     "@prosopo/*": ["./packages/*"]
+    // }
   }
 }
