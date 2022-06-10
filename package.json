@@ -19,9 +19,7 @@
     "start": "npm -w @prosopo/provider run start",
     "provider": "npm -w @prosopo/provider run cli",
     "fix-typescript-references": "utils-typescript-references",
-    "test": "npm run test:mock",
-    "test:mocha": "npm -w @prosopo/provider run test:mocha",
-    "test:mock": "./scripts/test.sh",
+    "test": "npm -w @prosopo/provider run test",
     "lint": "npm -w @prosopo/provider run eslint --fix src && npm -w @prosopo/contract run eslint --fix src",
     "populate-data": "npm -w @prosopo/provider run populate-data",
     "git-sync": "git submodule foreach -q --recursive 'git switch $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo master)'"
@@ -34,6 +32,24 @@
     "client-example",
     "packages/*"
   ],
+  "resolutions": {
+    "@polkadot/api": "8.7.1",
+    "@polkadot/api-contract": "8.7.1",
+    "@polkadot/api-derive": "8.7.1",
+    "@polkadot/api-augment": "8.7.1",
+    "@polkadot/apps-config": "0.116.1",
+    "@polkadot/keyring": "9.4.1",
+    "@polkadot/rpc-provider": "8.7.1",
+    "@polkadot/types": "8.7.1",
+    "@polkadot/networks": "9.4.1",
+    "@polkadot/util": "9.4.1",
+    "@polkadot/x-fetch": "9.4.1",
+    "@polkadot/x-global": "9.4.1",
+    "@polkadot/x-ws": "9.4.1",
+    "@polkadot/util-crypto": "9.4.1",
+    "rxjs": "7.5.5",
+    "bn.js": "4.12.0"
+  },
   "devDependencies": {
     "depcheck": "^1.4.3",
     "npm-check-updates": "^13.1.1",
