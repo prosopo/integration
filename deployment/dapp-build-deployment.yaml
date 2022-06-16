@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml -o deployment/
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: dapp-build
+  name: dapp-build
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: dapp-build
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -o deployment/
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: dapp-build
+    spec:
+      containers:
+        - image: prosopo/dapp-build:latest
+          name: dapp-build
+          resources: {}
+          volumeMounts:
+            - mountPath: /usr/src/dapp-example
+              name: dapp-build-claim0
+      restartPolicy: Always
+      volumes:
+        - name: dapp-build-claim0
+          persistentVolumeClaim:
+            claimName: dapp-build-claim0
+status: {}

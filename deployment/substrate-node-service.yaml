@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml -o deployment/
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: substrate-node
+  name: substrate-node
+spec:
+  ports:
+    - name: "9615"
+      port: 9615
+      targetPort: 9615
+    - name: "9944"
+      port: 9944
+      targetPort: 9944
+    - name: "9933"
+      port: 9933
+      targetPort: 9933
+  selector:
+    io.kompose.service: substrate-node
+status:
+  loadBalancer: {}
