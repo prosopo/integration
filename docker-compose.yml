@@ -9,6 +9,16 @@ services:
     build:
       context: .
       dockerfile: ./docker/contracts.protocol.dockerfile
+      args:
+        # amd64
+        # BASE: paritytech
+        # PLATFORM: linux
+        # ARCHITECTURE: x86_64
+        
+        # arm64
+        BASE: prosopo
+        PLATFORM: mac-m1
+        ARCHITECTURE: aarch64
     links:
       - substrate-node
     #command: "tail -f /dev/null"
@@ -21,6 +31,16 @@ services:
     build:
       context: .
       dockerfile: ./docker/contracts.dapp.dockerfile
+      args:
+        # amd64
+        # BASE: paritytech
+        # PLATFORM: linux
+        # ARCHITECTURE: x86_64
+
+        # arm64
+        BASE: prosopo
+        PLATFORM: mac-m1
+        ARCHITECTURE: aarch64
     links:
       - substrate-node
     #command: "tail -f /dev/null"
@@ -30,6 +50,9 @@ services:
       - ./db/:/data/db
     ports:
       - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
   substrate-node:
     image: prosopo/substrate:v0.14.0
     build:
