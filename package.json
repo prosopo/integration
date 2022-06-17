@@ -8,59 +8,41 @@
     "url": "git+https://github.com/prosopo-io/integration.git"
   },
   "scripts": {
-    "clean": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' + && find . -name \"build\" -type d -prune -exec rm -rf '{}' + && rm -f yarn.lock",
-    "build": "yarn run build:contract && yarn run build:provider && yarn run build:procaptcha && yarn run build:procaptcha-react",
-    "build:contract": "yarn workspace @prosopo/contract run clean && yarn workspace @prosopo/contract run build",
-    "build:provider": "yarn workspace @prosopo/provider run clean && yarn workspace @prosopo/provider run build",
-    "build:procaptcha": "yarn workspace @prosopo/procaptcha run clean && yarn workspace @prosopo/procaptcha run build",
-    "build:procaptcha-react": "yarn workspace @prosopo/procaptcha-react run clean && yarn workspace @prosopo/procaptcha-react run build",
-    "build:client-example": "yarn workspace client-example run build",
-    "setup": "yarn workspace @prosopo/provider run setup",
-    "start": "yarn workspace @prosopo/provider run start",
+    "clean": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' + && find . -name \"dist\" -type d -prune -exec rm -rf '{}' + && find . -name \"package-lock.json\" -type f -delete",
+    "build": "npm run build:contract && npm run build:provider && npm run build:procaptcha && npm run build:procaptcha-react",
+    "build:contract": "npm -w @prosopo/contract run clean && npm -w @prosopo/contract run build",
+    "build:provider": "npm -w @prosopo/provider run clean && npm -w @prosopo/provider run build",
+    "build:procaptcha": "npm -w @prosopo/procaptcha run clean && npm -w @prosopo/procaptcha run build",
+    "build:procaptcha-react": "npm -w @prosopo/procaptcha-react run clean && npm -w @prosopo/procaptcha-react run build",
+    "build:client-example": "npm -w client-example run build",
+    "setup": "npm -w @prosopo/provider run setup",
+    "start": "npm -w @prosopo/provider run start",
+    "provider": "npm -w @prosopo/provider run cli",
     "fix-typescript-references": "utils-typescript-references",
-    "test": "yarn run test:mock",
-    "test:mocha": "yarn workspace @prosopo/provider run test:mocha",
-    "test:mock": "./scripts/test.sh",
-    "lint": "yarn workspace @prosopo/provider run eslint --fix src && yarn workspace @prosopo/contract run eslint --fix src",
-    "populate-data": "yarn workspace @prosopo/provider run populate-data",
+    "test": "npm -w @prosopo/provider run test",
+    "lint": "npm -w @prosopo/provider run eslint --fix src && npm -w @prosopo/contract run eslint --fix src",
+    "populate-data": "npm -w @prosopo/provider run populate-data",
     "git-sync": "git submodule foreach -q --recursive 'git switch $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo master)'"
   },
   "private": true,
   "engines": {
-    "node": ">=8.2.0"
+    "node": ">=14.0.0"
   },
-  "packageManager": "yarn@3.2.0",
   "workspaces": [
     "client-example",
     "packages/*"
   ],
-  "resolutions": {
-    "@polkadot/api": "7.12.1",
-    "@polkadot/api-contract": "7.12.1",
-    "@polkadot/api-derive": "7.12.1",
-    "@polkadot/api-augment": "7.12.1",
-    "@polkadot/apps-config": "0.109.1",
-    "@polkadot/keyring": "8.5.1",
-    "@polkadot/types": "7.12.1",
-    "@polkadot/networks": "8.5.1",
-    "@polkadot/util": "8.5.1",
-    "@polkadot/x-fetch": "8.5.1",
-    "@polkadot/x-global": "8.5.1",
-    "@polkadot/x-ws": "8.5.1",
-    "@polkadot/util-crypto": "8.5.1",
-    "rxjs": "7.5.5",
-    "bn.js": "4.12.0"
-  },
   "devDependencies": {
-    "@rushstack/eslint-patch": "^1.0.6",
-    "@typescript-eslint/parser": "^5.14.0"
+    "depcheck": "^1.4.3",
+    "npm-check-updates": "^13.1.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.7.3"
   },
   "description": "Integrates protocol and provider for development purposes",
   "bugs": {
     "url": "https://github.com/prosopo-io/integration/issues"
   },
   "homepage": "https://github.com/prosopo-io/integration#readme",
-  "main": ".eslintrc.js",
   "keywords": [],
   "license": "ISC"
 }
