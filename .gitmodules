@@ -30,3 +30,7 @@
 	path = client-example
 	url = git@github.com:prosopo-io/client-example.git
 	branch = main
+[submodule "demo-nft-marketplace"]
+	path = demos/demo-nft-marketplace
+	url = git@github.com:prosopo-io/client-example.git
+	branch = main

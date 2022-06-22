@@ -30,7 +30,8 @@
   },
   "workspaces": [
     "client-example",
-    "packages/*"
+    "packages/*",
+    "demos/*"
   ],
   "resolutions": {
     "@polkadot/api": "8.7.1",
