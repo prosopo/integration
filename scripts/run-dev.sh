@@ -10,6 +10,7 @@ function usage() {
         --build-substrate:    rebuild the substrate image from scratch
         --deploy-protocol:    deploy the prosopo protocol contract
         --deploy-dapp:        deploy the dapp-example contract
+        --deploy-demo:        deploy the dapp-nft-marketplace contract
         --restart-chain:      restart the substrate chain
         --test-db:            start substrate container and the database container with test dbs
 USAGE
@@ -21,6 +22,7 @@ INSTALL_PACKAGES=false
 BUILD_SUBSTRATE=false
 DEPLOY_PROTOCOL=false
 DEPLOY_DAPP=false
+DEPLOY_DEMO=false
 RESTART_CHAIN=false
 TEST_DB=false
 ENV_FILE=.env
@@ -48,6 +50,10 @@ for arg in "$@"; do
     DEPLOY_DAPP=true
     shift # Remove --deploy_dapp from `$@`
     ;;
+  --deploy-demo)
+    DEPLOY_DEMO=true
+    shift # Remove --deploy_dapp from `$@`
+    ;;
   --test-db)
     TEST_DB=true
     shift # Remove --test-db from `$@`
@@ -65,6 +71,7 @@ echo "INSTALL_PACKAGES: $INSTALL_PACKAGES"
 echo "BUILD_SUBSTRATE:  $BUILD_SUBSTRATE"
 echo "DEPLOY_PROTOCOL:  $DEPLOY_PROTOCOL"
 echo "DEPLOY_DAPP:      $DEPLOY_DAPP"
+echo "DEPLOY_DEMO:      $DEPLOY_DEMO"
 echo "TEST_DB:          $TEST_DB"
 echo "RESTART_CHAIN:    $RESTART_CHAIN"
 echo "ENV_FILE:         $ENV_FILE"
@@ -121,11 +128,19 @@ if [[ $DEPLOY_DAPP == true ]]; then
   docker cp "$DAPP_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.dapp" || exit 1
 fi
 
+if [[ $DEPLOY_DEMO == true ]]; then
+  docker compose run -e "$(cat "$ENV_FILE.protocol")" demo-build /usr/src/docker/contracts.deploy.demo.sh
+  DEMO_CONTAINER_NAME=$(docker ps -qa -f name=demo | head -n 1)
+  docker cp "$DEMO_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.demo" || exit 1
+fi
+
 # Put the new contract addresses in a new .env file based on a template .env.txt
 PROTOCOL_CONTRACT_ADDRESS=$(echo "$(<.env.protocol)" | cut -d '=' -f2)
 DAPP_CONTRACT_ADDRESS=$(echo "$(<.env.dapp)" | cut -d '=' -f2)
+DEMO_CONTRACT_ADDRESS=$(echo "$(<.env.demo)" | cut -d '=' -f2)
 sed -e "s/%CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/g;s/%DAPP_CONTRACT_ADDRESS%/$DAPP_CONTRACT_ADDRESS/g" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE
 sed -e "s/%DAPP_CONTRACT_ARGS_PROTOCOL_CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/g;" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE
+sed -e "s/%DEMO_CONTRACT_ADDRESS%/$DEMO_CONTRACT_ADDRESS/g;" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE
 
 # TODO: move .env to .env.dev.
 # mv $ENV_FILE $ENV_FILE.dev
