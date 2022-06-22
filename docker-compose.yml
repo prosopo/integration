@@ -27,7 +27,7 @@ services:
   provider-db:
     image: ${DATABASE_IMAGE}
     volumes:
-      - ../db/:/data/db
+      - ${DATABASE_SHARED_VOLUME_PATH}:/data/db
     ports:
       - "27017:27017"
     environment:
