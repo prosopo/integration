@@ -99,7 +99,7 @@ fi
 if [[ $TEST_DB == true ]]; then
   START_SUBSTRATE_ARGS+=(--test-db)
 fi
-./scripts/start-substrate.sh "${START_SUBSTRATE_ARGS[@]}" || exit 1
+./scripts/start-substrate.sh "${START_SUBSTRATE_ARGS[@]}"
 
 # start the database container
 ./scripts/start-db.sh --env-file=$ENV_FILE
@@ -118,14 +118,14 @@ fi
 if [[ $DEPLOY_DAPP == true ]]; then
   docker compose run -e "$(cat "$ENV_FILE.protocol")" dapp-build /usr/src/docker/contracts.deploy.dapp.sh
   DAPP_CONTAINER_NAME=$(docker ps -qa -f name=dapp | head -n 1)
-  docker cp "$DAPP_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.dapp" || exit 1
+  docker cp "$DAPP_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.dapp" || echo "ERROR: Failed to copy .env file from container $DAPP_CONTAINER_NAME" && exit 1
 fi
 
 # Put the new contract addresses in a new .env file based on a template .env.txt
 PROTOCOL_CONTRACT_ADDRESS=$(echo "$(<.env.protocol)" | cut -d '=' -f2)
 DAPP_CONTRACT_ADDRESS=$(echo "$(<.env.dapp)" | cut -d '=' -f2)
-sed -e "s/%CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/g;s/%DAPP_CONTRACT_ADDRESS%/$DAPP_CONTRACT_ADDRESS/g" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE
-sed -e "s/%DAPP_CONTRACT_ARGS_PROTOCOL_CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/g;" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE
+sedi -e "s/%CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/g;s/%DAPP_CONTRACT_ADDRESS%/$DAPP_CONTRACT_ADDRESS/g" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE || echo "ERROR: Invalid dapp contract address - '$DAPP_CONTRACT_ADDRESS'" && exit 1
+sedi -e "s/%DAPP_CONTRACT_ARGS_PROTOCOL_CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/g;" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE || echo "ERROR: Invalid protocol contract address - '$PROTOCOL_CONTRACT_ADDRESS'" && exit 1
 
 # TODO: move .env to .env.dev.
 # mv $ENV_FILE $ENV_FILE.dev
