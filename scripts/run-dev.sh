@@ -99,7 +99,7 @@ fi
 if [[ $TEST_DB == true ]]; then
   START_SUBSTRATE_ARGS+=(--test-db)
 fi
-./scripts/start-substrate.sh "${START_SUBSTRATE_ARGS[@]}"
+./scripts/start-substrate.sh "${START_SUBSTRATE_ARGS[@]}" || exit 1
 
 # start the database container
 ./scripts/start-db.sh --env-file=$ENV_FILE
