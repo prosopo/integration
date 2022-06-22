@@ -11,14 +11,14 @@ services:
       dockerfile: ./docker/contracts.protocol.dockerfile
       args:
         # amd64
-        # BASE: paritytech
-        # PLATFORM: linux
-        # ARCHITECTURE: x86_64
+        BASE: paritytech
+        TAG: latest
+        ARCHITECTURE: x86_64
         
         # arm64
-        BASE: prosopo
-        PLATFORM: mac-m1
-        ARCHITECTURE: aarch64
+        # BASE: prosopo
+        # TAG: m1-latest
+        # ARCHITECTURE: aarch64
     links:
       - substrate-node
     #command: "tail -f /dev/null"
@@ -33,14 +33,14 @@ services:
       dockerfile: ./docker/contracts.dapp.dockerfile
       args:
         # amd64
-        # BASE: paritytech
-        # PLATFORM: linux
-        # ARCHITECTURE: x86_64
+        BASE: paritytech
+        TAG: latest
+        ARCHITECTURE: x86_64
 
         # arm64
-        BASE: prosopo
-        PLATFORM: mac-m1
-        ARCHITECTURE: aarch64
+        # BASE: prosopo
+        # TAG: m1-latest
+        # ARCHITECTURE: aarch64
     links:
       - substrate-node
     #command: "tail -f /dev/null"

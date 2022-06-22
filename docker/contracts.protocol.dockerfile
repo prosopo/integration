@@ -1,7 +1,7 @@
 ARG BASE=paritytech
-ARG PLATFORM=linux
+ARG TAG=latest
 
-FROM ${BASE}/contracts-ci-${PLATFORM}:latest as builder
+FROM ${BASE}/contracts-ci-linux:${TAG} as builder
 RUN mkdir -p /usr/src/docker
 COPY ./docker/contracts.deploy.protocol.sh /usr/src/docker/
 COPY ./docker/contracts.deploy.contract.sh /usr/src/docker/
