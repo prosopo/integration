@@ -36,7 +36,7 @@ done
 
 # restart chain with no data
 if [[ $RESTART_CHAIN == true || $TEST_DB == true ]]; then
-  docker compose restart substrate-node
+  rm -rf ./chain-data
 fi
 
 SUBSTRATE_CONTAINER_NAME=$(docker ps -q -f name=substrate-node)
@@ -44,13 +44,13 @@ if [ -z "$SUBSTRATE_CONTAINER_NAME" ]; then
   echo "Substrate container not found, exiting"
 fi
 
+echo "Waiting for the substrate node to start up..."
 # switch db
+# TODO test this is working
 if [[ $TEST_DB == true ]]; then
-  docker cp ./.chain-test/. "$SUBSTRATE_CONTAINER_NAME":/chain-data
+  cp ./.chain-test/. ./chain-data
 fi
 
-echo "Waiting for the substrate node to start up..."
-docker compose up -d substrate-node
 
 # Mac OSX cannot curl docker container https://stackoverflow.com/a/45390994/1178971
 if [[ "$OSTYPE" == "darwin"* ]]; then

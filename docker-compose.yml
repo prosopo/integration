@@ -78,6 +78,8 @@ services:
       - MONGO_INITDB_DATABASE=${DATABASE_NAME}
   substrate-node:
     image: prosopo/substrate:v1.0.0
+    volumes:
+      - ${SUBSTRATE_SHARED_VOLUME_PATH}:/substrate-contracts-node/chain-data
     build:
       context: ./docker/
       dockerfile: Substrate.dockerfile

@@ -128,13 +128,13 @@ fi
 if [[ $DEPLOY_DAPP == true ]]; then
   docker compose run -e "$(cat "$ENV_FILE.protocol")" dapp-build /usr/src/docker/contracts.deploy.dapp.sh
   DAPP_CONTAINER_NAME=$(docker ps -qa -f name=dapp | head -n 1)
-  docker cp "$DAPP_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.dapp" || echo "ERROR: Failed to copy .env file from container $DAPP_CONTAINER_NAME" && exit 1
+  docker cp "$DAPP_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.dapp" || echo "ERROR: Failed to copy .env file from container $DAPP_CONTAINER_NAME"
 fi
 
 if [[ $DEPLOY_DEMO == true ]]; then
   docker compose run -e "$(cat "$ENV_FILE.protocol")" demo-build /usr/src/docker/contracts.deploy.demo.sh
   DEMO_CONTAINER_NAME=$(docker ps -qa -f name=demo | head -n 1)
-  docker cp "$DEMO_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.demo" || exit 1
+  docker cp "$DEMO_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.demo"
 fi
 
 # Put the new contract addresses in a new .env file based on a template .env.txt
