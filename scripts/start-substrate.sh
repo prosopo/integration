@@ -48,7 +48,7 @@ echo "Waiting for the substrate node to start up..."
 # switch db
 # TODO test this is working
 if [[ $TEST_DB == true ]]; then
-  cp ./.chain-test/. ./chain-data
+  cp -r .chain-test/. ./chain-data
 fi
 
 

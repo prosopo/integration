@@ -28,6 +28,8 @@ services:
       - type: bind
         source: ./dapp-example
         target: /usr/src/dapp-example
+    environment:
+      - CONTRACT_ADDRESS=${CONTRACT_ADDRESS}
     build:
       context: .
       dockerfile: ./dapp-example/docker/contracts.dapp.dockerfile
@@ -50,6 +52,8 @@ services:
       - type: bind
         source: ./demos/demo-nft-marketplace
         target: /usr/src/demos/demo-nft-marketplace
+    environment:
+      - CONTRACT_ADDRESS=${CONTRACT_ADDRESS}
     build:
       context: .
       dockerfile: ./demos/demo-nft-marketplace/docker/contracts.demo.dockerfile
