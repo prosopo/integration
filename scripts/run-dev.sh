@@ -10,6 +10,7 @@ function usage() {
         --build-substrate:    rebuild the substrate image from scratch
         --deploy-protocol:    deploy the prosopo protocol contract
         --deploy-dapp:        deploy the dapp-example contract
+        --deploy-demo:        deploy the dapp-nft-marketplace contract
         --restart-chain:      restart the substrate chain
         --test-db:            start substrate container and the database container with test dbs
 USAGE
@@ -21,6 +22,7 @@ INSTALL_PACKAGES=false
 BUILD_SUBSTRATE=false
 DEPLOY_PROTOCOL=false
 DEPLOY_DAPP=false
+DEPLOY_DEMO=false
 RESTART_CHAIN=false
 TEST_DB=false
 ENV_FILE=.env
@@ -48,6 +50,10 @@ for arg in "$@"; do
     DEPLOY_DAPP=true
     shift # Remove --deploy_dapp from `$@`
     ;;
+  --deploy-demo)
+    DEPLOY_DEMO=true
+    shift # Remove --deploy_dapp from `$@`
+    ;;
   --test-db)
     TEST_DB=true
     shift # Remove --test-db from `$@`
@@ -65,6 +71,7 @@ echo "INSTALL_PACKAGES: $INSTALL_PACKAGES"
 echo "BUILD_SUBSTRATE:  $BUILD_SUBSTRATE"
 echo "DEPLOY_PROTOCOL:  $DEPLOY_PROTOCOL"
 echo "DEPLOY_DAPP:      $DEPLOY_DAPP"
+echo "DEPLOY_DEMO:      $DEPLOY_DEMO"
 echo "TEST_DB:          $TEST_DB"
 echo "RESTART_CHAIN:    $RESTART_CHAIN"
 echo "ENV_FILE:         $ENV_FILE"
@@ -78,6 +85,9 @@ mv $ENV_FILE.tmp $ENV_FILE
 
 # create a new version of the .env based on a template
 cp "${ENV_FILE:1}".txt $ENV_FILE
+cp "${ENV_FILE:1}".demo.txt $ENV_FILE.demo
+cp "${ENV_FILE:1}".dapp.txt $ENV_FILE.dapp
+cp "${ENV_FILE:1}".protocol.txt $ENV_FILE.protocol
 
 # https://stackoverflow.com/questions/2320564/sed-i-command-for-in-place-editing-to-work-with-both-gnu-sed-and-bsd-osx/38595160#38595160
 sedi() {
@@ -97,6 +107,7 @@ if [[ $RESTART_CHAIN == true ]]; then
   START_SUBSTRATE_ARGS+=(--restart-chain)
 fi
 if [[ $TEST_DB == true ]]; then
+  docker compose restart substrate-node
   START_SUBSTRATE_ARGS+=(--test-db)
 fi
 ./scripts/start-substrate.sh "${START_SUBSTRATE_ARGS[@]}" || exit 1
@@ -121,27 +132,30 @@ if [[ $DEPLOY_DAPP == true ]]; then
   docker cp "$DAPP_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.dapp" || echo "ERROR: Failed to copy .env file from container $DAPP_CONTAINER_NAME" && exit 1
 fi
 
+if [[ $DEPLOY_DEMO == true ]]; then
+  docker compose run -e "$(cat "$ENV_FILE.protocol")" demo-build /usr/src/docker/contracts.deploy.demo.sh
+  DEMO_CONTAINER_NAME=$(docker ps -qa -f name=demo | head -n 1)
+  docker cp "$DEMO_CONTAINER_NAME:/usr/src/.env" "$ENV_FILE.demo" || exit 1
+fi
+
 # Put the new contract addresses in a new .env file based on a template .env.txt
-PROTOCOL_CONTRACT_ADDRESS=$(echo "$(<.env.protocol)" | cut -d '=' -f2)
-DAPP_CONTRACT_ADDRESS=$(echo "$(<.env.dapp)" | cut -d '=' -f2)
-sedi -e "s/%CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/g;s/%DAPP_CONTRACT_ADDRESS%/$DAPP_CONTRACT_ADDRESS/g" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE || echo "ERROR: Invalid dapp contract address - '$DAPP_CONTRACT_ADDRESS'" && exit 1
-
+PROTOCOL_CONTRACT_ADDRESS=$(echo "$(<$ENV_FILE.protocol)" | cut -d '=' -f2) || false
+DAPP_CONTRACT_ADDRESS=$(echo "$(<$ENV_FILE.dapp)" | cut -d '=' -f2) || false
+DEMO_CONTRACT_ADDRESS=$(echo "$(<$ENV_FILE.demo)" | cut -d '=' -f2) || false
+echo "PROTOCOL_CONTRACT_ADDRESS $PROTOCOL_CONTRACT_ADDRESS"
+echo "DAPP_CONTRACT_ADDRESS     $DAPP_CONTRACT_ADDRESS"
+echo "DEMO_CONTRACT_ADDRESS     $DEMO_CONTRACT_ADDRESS"
+if [[ $PROTOCOL_CONTRACT_ADDRESS ]]; then
+  sed -e "s/%CONTRACT_ADDRESS%/$PROTOCOL_CONTRACT_ADDRESS/g" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE || echo "ERROR: Invalid contract address - '$CONTRACT_ADDRESS'"
+fi
+if [[ $DAPP_CONTRACT_ADDRESS ]]; then
+  sed -e "s/%DAPP_CONTRACT_ADDRESS%/$DAPP_CONTRACT_ADDRESS/g" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE || echo "ERROR: Invalid dapp contract address - '$DAPP_CONTRACT_ADDRESS'"
+fi
+if [[ $DEMO_CONTRACT_ADDRESS ]]; then
+  sed -e "s/%DEMO_CONTRACT_ADDRESS%/$DEMO_CONTRACT_ADDRESS/g" $ENV_FILE > $ENV_FILE.new && mv $ENV_FILE.new $ENV_FILE || echo "ERROR: Invalid dapp contract address - '$DEMO_CONTRACT_ADDRESS'"
+fi
 # TODO: move .env to .env.dev.
-# mv $ENV_FILE $ENV_FILE.dev
-
-# echo "Linking artifacts to core package and contract package"
-# docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/provider/artifacts'
-# docker exec -it "$CONTAINER_NAME" zsh -c 'ln -sfn /usr/src/protocol/artifacts /usr/src/packages/contract/artifacts'
-
-# echo "Copy protocol/artifacts/prosopo.json to packages/contract/src/abi/prosopo.json"
-# docker exec -it "$CONTAINER_NAME" zsh -c 'cp -f /usr/src/protocol/artifacts/prosopo.json /usr/src/packages/contract/src/abi/prosopo.json'
-
-# if [[ $BUILD_PROVIDER == true ]]; then
-#   echo "Generating provider mnemonic"
-#   docker exec -it "$CONTAINER_NAME" zsh -c '/usr/src/docker/dev.generate.provider.mnemonic.sh /usr/src/packages/provider'
-#   echo "Sending funds to the Provider account and registering the provider"
-#   docker exec -it --env-file $ENV_FILE "$CONTAINER_NAME" zsh -c 'yarn && yarn build && cd /usr/src/packages/provider && yarn setup provider && yarn setup dapp'
-# fi
 
 echo "Dev env up!"
+exit 0
 # docker exec -it --env-file $ENV_FILE "$CONTAINER_NAME" zsh

@@ -34,41 +34,23 @@ for arg in "$@"; do
   esac
 done
 
-echo "Waiting for the substrate node to start up..."
-SUBSTRATE_CONTAINER_NAME=$(docker ps -q -f name=substrate-node)
-if [ -z "$SUBSTRATE_CONTAINER_NAME" ]; then
-  echo "Substrate container not running, exiting"
-  exit 1
-fi
-
-SUBSTRATE_PID=$(docker exec $SUBSTRATE_CONTAINER_NAME sh -c "ps aux | grep -v grep | grep substrate-contracts-node | awk '{print \$2}'")
-MAIN_PID=$(docker exec $SUBSTRATE_CONTAINER_NAME sh -c "ps -ef | grep \"0\ssleep infinity\" | awk 'FNR == 1 {print \$2}'")
 # restart chain with no data
 if [[ $RESTART_CHAIN == true || $TEST_DB == true ]]; then
-  if [[ -n "$SUBSTRATE_PID" ]]; then
-    for pid in $SUBSTRATE_PID; do
-      echo "Killing existing substrate pid $pid..."
-      docker exec "$SUBSTRATE_CONTAINER_NAME" kill -9 "$pid"
-    done
-  fi
-  if [[ $RESTART_CHAIN == true ]]; then
-    docker exec -d "$SUBSTRATE_CONTAINER_NAME" rm -rf ./chain-data
-  fi
+  docker compose restart substrate-node
+fi
+
+SUBSTRATE_CONTAINER_NAME=$(docker ps -q -f name=substrate-node)
+if [ -z "$SUBSTRATE_CONTAINER_NAME" ]; then
+  echo "Substrate container not found, exiting"
 fi
 
 # switch db
 if [[ $TEST_DB == true ]]; then
-  # if [[ -n "$SUBSTRATE_PID" ]]; then
-  #   echo "Killing existing substrate..."
-  #   docker exec "$SUBSTRATE_CONTAINER_NAME" kill -9 "${SUBSTRATE_PID//$'\n'/ }"
-  # fi
-  docker exec -d "$SUBSTRATE_CONTAINER_NAME" rm -rf ./chain-test
-  docker cp ./.chain-test/. "$SUBSTRATE_CONTAINER_NAME":/chain-test
-  docker exec -d "$SUBSTRATE_CONTAINER_NAME" bash -c "substrate-contracts-node --dev -d ./chain-test --unsafe-ws-external --rpc-external --prometheus-external -lerror,runtime::contracts=debug >> /proc/$MAIN_PID/fd/1  2>&1"
-else
-
-  docker exec -d "$SUBSTRATE_CONTAINER_NAME" bash -c "substrate-contracts-node --dev -d ./chain-data --unsafe-ws-external --rpc-external --prometheus-external -lerror,runtime::contracts=debug >> /proc/$MAIN_PID/fd/1  2>&1"
+  docker cp ./.chain-test/. "$SUBSTRATE_CONTAINER_NAME":/chain-data
 fi
+
+echo "Waiting for the substrate node to start up..."
+docker compose up -d substrate-node
 
 # Mac OSX cannot curl docker container https://stackoverflow.com/a/45390994/1178971
 if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -77,7 +59,7 @@ else
   SUBSTRATE_CONTAINER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$SUBSTRATE_CONTAINER_NAME")
 fi
 
-rpc_methods () {
+rpc_methods() {
   RESPONSE_CODE=$(curl -o /dev/null -s -w "%{http_code}\n" -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "rpc_methods"}' "$SUBSTRATE_CONTAINER_IP":9933/)
 }
 
