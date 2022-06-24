@@ -52,7 +52,7 @@ services:
         target: /usr/src/demos/demo-nft-marketplace
     build:
       context: .
-      dockerfile: demos/demo-nft-marketplace/docker/contracts.demo.dockerfile
+      dockerfile: ./demos/demo-nft-marketplace/docker/contracts.demo.dockerfile
       args:
         # amd64
         BASE: paritytech
@@ -66,16 +66,6 @@ services:
     links:
       - substrate-node
     #command: "tail -f /dev/null"
-  provider-db:
-    image: ${DATABASE_IMAGE}
-    volumes:
-      - ${DATABASE_SHARED_VOLUME_PATH}:/data/db
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-      - MONGO_INITDB_DATABASE=${DATABASE_NAME}
   substrate-node:
     image: prosopo/substrate:v1.0.0
     volumes:
