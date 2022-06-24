@@ -107,7 +107,6 @@ if [[ $RESTART_CHAIN == true ]]; then
   START_SUBSTRATE_ARGS+=(--restart-chain)
 fi
 if [[ $TEST_DB == true ]]; then
-  docker compose restart substrate-node
   START_SUBSTRATE_ARGS+=(--test-db)
 fi
 ./scripts/start-substrate.sh "${START_SUBSTRATE_ARGS[@]}" || exit 1

@@ -32,7 +32,8 @@
   },
   "workspaces": [
     "client-example",
-    "packages/*"
+    "packages/*",
+    "demos/*"
   ],
   "devDependencies": {
     "depcheck": "^1.4.3",

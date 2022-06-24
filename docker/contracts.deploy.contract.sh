@@ -89,7 +89,7 @@ if [[ $BUILD == true ]]; then
 fi
 
 # Generate deploy command
-CMD="cargo contract instantiate $WASM --args $CONTRACT_ARGS --constructor $CONSTRUCTOR --suri $SURI --value $ENDOWMENT --url '$ENDPOINT:$PORT'"
+CMD="cargo contract instantiate $WASM --args $CONTRACT_ARGS --constructor $CONSTRUCTOR --suri $SURI --value $ENDOWMENT --url '$ENDPOINT:$PORT' --gas 500000000000"
 CMDSALT="$CMD"
 if [[ $USE_SALT == true ]]; then
   SALT=$(date | sha256sum | cut -b 1-64)

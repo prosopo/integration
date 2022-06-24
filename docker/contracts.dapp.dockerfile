@@ -1,4 +1,7 @@
-FROM paritytech/contracts-ci-linux:latest as builder
+ARG BASE=paritytech
+ARG TAG=latest
+
+FROM ${BASE}/contracts-ci-linux:${TAG} as builder
 RUN mkdir -p /usr/src/docker
 COPY ./docker/contracts.deploy.dapp.sh /usr/src/docker/
 COPY ./docker/contracts.deploy.contract.sh /usr/src/docker/
@@ -18,7 +21,8 @@ WORKDIR /usr/src/dapp/contracts
 RUN echo $(ls -lah /usr/src/build/contracts)
 WORKDIR /usr/src/build/contracts
 #RUN cargo +nightly contract build
-RUN /usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo metadata --format-version 1 --manifest-path Cargo.toml
+ARG ARCHITECTURE=x86_64
+RUN /usr/local/rustup/toolchains/nightly-${ARCHITECTURE}-unknown-linux-gnu/bin/cargo metadata --format-version 1 --manifest-path Cargo.toml
 WORKDIR /usr/src
 RUN chmod +x /usr/src/docker/contracts.deploy.dapp.sh
 CMD ["bash", "/usr/src/docker/contracts.deploy.dapp.sh"]

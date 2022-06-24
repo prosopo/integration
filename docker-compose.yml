@@ -9,6 +9,16 @@ services:
     build:
       context: .
       dockerfile: ./docker/contracts.protocol.dockerfile
+      args:
+        # amd64
+        BASE: paritytech
+        TAG: latest
+        ARCHITECTURE: x86_64
+
+        # arm64
+        # BASE: prosopo
+        # TAG: m1-latest
+        # ARCHITECTURE: aarch64
     links:
       - substrate-node
     #command: "tail -f /dev/null"
@@ -21,6 +31,38 @@ services:
     build:
       context: .
       dockerfile: ./docker/contracts.dapp.dockerfile
+      args:
+        # amd64
+        BASE: paritytech
+        TAG: latest
+        ARCHITECTURE: x86_64
+
+        # arm64
+        # BASE: prosopo
+        # TAG: m1-latest
+        # ARCHITECTURE: aarch64
+    links:
+      - substrate-node
+    #command: "tail -f /dev/null"
+  demo-build:
+    image: prosopo/demo-build:latest
+    volumes:
+      - type: bind
+        source: ./demos/demo-nft-marketplace
+        target: /usr/src/demos/demo-nft-marketplace
+    build:
+      context: .
+      dockerfile: ./docker/contracts.demo.dockerfile
+      args:
+        # amd64
+        BASE: paritytech
+        TAG: latest
+        ARCHITECTURE: x86_64
+
+        # arm64
+        # BASE: prosopo
+        # TAG: m1-latest
+        # ARCHITECTURE: aarch64
     links:
       - substrate-node
     #command: "tail -f /dev/null"
