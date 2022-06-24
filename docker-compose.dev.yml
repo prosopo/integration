@@ -12,9 +12,6 @@ services:
       - MONGO_INITDB_DATABASE=${DATABASE_NAME}
   substrate-node:
     image: prosopo/substrate:demo-v1.0.0
-    build:
-      context: ./docker/
-      dockerfile: Substrate.dockerfile
     ports:
       - "9615:9615"
       - "9944:9944"
