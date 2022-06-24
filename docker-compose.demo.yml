@@ -8,3 +8,10 @@ services:
       - "9933:9933"
     deploy:
       replicas: 1
+  provider:
+    image: prosopo/provider
+    ports:
+      - "3000:3000"
+      - "4000:4000"
+    deploy:
+      replicas: 1
