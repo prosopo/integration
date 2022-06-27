@@ -2,12 +2,13 @@
 Integrates prosopo repositories in a development environment
 
 - [protocol](https://github.com/prosopo-io/protocol/)
-- [dapp-example](https://github.com/prosopo-io/dapp-example)
 - [provider](https://github.com/prosopo-io/provider)
 - [contract](https://github.com/prosopo-io/contract)
 - [procaptcha](https://github.com/prosopo-io/procaptcha)
 - [procaptcha-react](https://github.com/prosopo-io/procaptcha-react)
 - [client-example](https://github.com/prosopo-io/client-example)
+- [demo-nft-marketplace](https://github.com/prosopo-io/demo-nft-marketplace)
+- [dapp-example](https://github.com/prosopo-io/dapp-example)
 
 # Prerequisites
 - ability to run bash scripts
@@ -46,48 +47,35 @@ This does the following:
 
 The following flags are optional
 
-| Flag              | Description                                                                                            |
-|-------------------|--------------------------------------------------------------------------------------------------------|
-| `deploy-protocol` | Deploy the Prosopo protocol contract to the Substrate node and stores `CONTRACT_ADDRESS` in `.env`     |
-| `deploy-dapp`     | Deploy an example dapp contract to the Substrate node and stores `DAPP_CONTRACT_ADDRESS` in `.env`     |
-| `restart-chain`   | Start with a fresh version of the substrate node with an empty chain. Contracts will need re-deployed. |
-| `test-db`         | Start substrate container and the database container with test dbs                                     |
-
-
+| Flag              | Description                                                                    |
+|-------------------|--------------------------------------------------------------------------------|
+| `restart-chain`   | Restart the substrate container, deleting any data that was added to contracts |
+| `test-db`         | Start substrate container and the database container with test dbs             |
 
 ## Development Environment Setup
-The following command can be run during development to populate the contract with dummy data.
-- TODO...
-`npm run populate-data`
 
-### Development Debugging and Testing
-When debugging the frontend you will only want 1 provider in the contract so that the random provider returned to you has a corresponding backend. The steps to achieve this are as follows:
-- Run `make dev deploy-protocol deploy-dapp` in the integration root to deploy the contracts
-- Run `yarn` in npm workspace to install all packages
-- Run `TODO` in npm workspace to build packages and populate environment variables
-- TODO...
+### Debugging and Testing
+To bebug a frontend dapp, register a provider and a dapp in the [protocol](https://github.com/prosopo-io/protocol/) contract. The steps to achieve this are as follows:
 
-### Populate Data
-Dummy data can be populated in the protocol contract and provider database using the following steps. Snapshots of the substrate database, mongo database, and created accounts are then exported, ready to be used for testing in future.
-- Create an *empty* environment (restart substrate chain and clear mongo database)
-- Run `yarn populate-data` to populate the contract and database with *many* Providers and Dapps
-  - Substrate chain data will be exported to `.chain-test` in the integration root
-  - Mongo database data will be exported to `.db-test` in the integration root
-  - Created account mnemonics will be exported to `.database_accounts.json`
-- Remove your environment afterwards
-  - To clear the substrate database run `make dev restart-chain`
-  - To clear the mongo database run `docker container exec -it "$(docker ps -q -f name=provider-db)" bash -c "mongosh -u root -p root --authenticationDatabase admin prosopo --eval 'db.dropDatabase()'"`
+```bash
+npm run setup
+```
 
-### Running Tests with Populated Data
-Once you have a saved copy of data, you can use it to run the tests with the following command
+Start the captcha challenge API by running the following command
 
-`yarn test:mock`
+```bash
+npm run start
+```
 
-This performs the following steps:
+You can then start one of the frontend demos to begin receiving captchas in the browser. See the READMEs in each of the demos for information on how to run them.
 
-- Restarts substrate using the `.chain-test` data directory
-- Starts the mongo database loading the data in `.db-test` to the `DATABASE_NAME` specified in `.env.test`
-- Copies `.database_accounts.json` to `database_accounts.json`
-- Runs `yarn workspace @prosopo/provider run test:mock` in the provider package
-- Restarts substrate with your original chain data
-- Restarts the mongo database with your original database as specified in `DATABASE_NAME` in `.env`
+- [demo-nft-marketplace](https://github.com/prosopo-io/demo-nft-marketplace) (full marketplace)
+- [client-example](https://github.com/prosopo-io/client-example) (minimal implementation)
+
+
+### Running Tests
+Tests are executed on a test docker container with pre-deployed, pre-populated contracts. This container is started when the following command is run:
+
+`npm run test`
+
+The tests are run from the provider repository.
