@@ -1,39 +1,19 @@
 version: '3.4'
 services:
-  provider-api:
-    build:
-      context: .
-      dockerfile: ./docker/dev.dockerfile
-    ports:
-      - "3000:3000"
+  provider-db:
+    image: ${DATABASE_IMAGE}
     volumes:
-      - type: bind
-        source: .
-        target: /usr/src/
-
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=root
-    links:
-      - substrate-node
-      - mongodb
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-  mongodb:
-    image: mongo:5.0.4
-    volumes:
-      - ./mongodb/:/data/db
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=root
+      - ${DATABASE_SHARED_VOLUME_PATH}:/data/db
     ports:
       - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${DATABASE_NAME}
   substrate-node:
-    image: prosopo/substrate:monthly-2022-03
-    build:
-      context: ./docker/
-      dockerfile: Substrate.dockerfile
+    image: prosopo/substrate:demo-v1.0.0
     ports:
       - "9615:9615"
       - "9944:9944"
       - "9933:9933"
+    command: [ "substrate-contracts-node", "--dev", "-d", "./chain-data", "--unsafe-ws-external", "--rpc-external", "-lerror,runtime::contracts=debug" ]

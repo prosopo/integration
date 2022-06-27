@@ -9,7 +9,7 @@
 [submodule "packages/procaptcha"]
 	path = packages/procaptcha
 	url = git@github.com:prosopo-io/procaptcha.git
-    branch = master
+    branch = main
 [submodule "redspot"]
 	path = redspot
 	url = git@github.com:prosopo-io/redspot.git
@@ -18,3 +18,19 @@
 	path = packages/provider
 	url = git@github.com:prosopo-io/provider.git
     branch = master
+[submodule "packages/contract"]
+	path = packages/contract
+	url = git@github.com:prosopo-io/contract.git
+    branch = main
+[submodule "packages/procaptcha-react"]
+	path = packages/procaptcha-react
+	url = git@github.com:prosopo-io/procaptcha-react.git
+	branch = main
+[submodule "client-example"]
+	path = client-example
+	url = git@github.com:prosopo-io/client-example.git
+	branch = main
+[submodule "demos/demo-nft-marketplace"]
+	path = demos/demo-nft-marketplace
+	url = git@github.com:prosopo-io/demo-nft-marketplace.git
+	branch = main

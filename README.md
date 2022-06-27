@@ -18,7 +18,7 @@ Start by pulling submodules using
 Create the dev docker containers using `make dev`
 
 ```bash
-make dev install build-provider deploy-protocol deploy-dapp build-redspot
+make dev install build-provider deploy-protocol deploy-dapp deploy-demo
 ```
 
 `make dev` will always perform the following tasks:
@@ -60,7 +60,7 @@ Now you can interact with the provider CLI, start the API server, or run the tes
 The provider tests can now be run from inside the container using
 
 ```bash
-cd ./packages/provider/packages/core && yarn test
+cd ./packages/provider && yarn test
 ```
 
 ## Command Line Interface
@@ -68,7 +68,7 @@ cd ./packages/provider/packages/core && yarn test
 First, `cd` into the `core` package.
 
 ```bash
-cd ./packages/provider/packages/core
+cd ./packages/provider
 ```
 
 Then you will be able to run the following commands.
@@ -76,7 +76,7 @@ Then you will be able to run the following commands.
 ### Register a provider
 
 ```bash
-yarn start provider_register --fee=10 --serviceOrigin=https://localhost:8282 --payee=Provider --address ADDRESS
+yarn provider provider_register --fee=10 --serviceOrigin=https://localhost:8282 --payee=Provider --address ADDRESS
 ```
 
 | Param | Description |
@@ -89,7 +89,7 @@ yarn start provider_register --fee=10 --serviceOrigin=https://localhost:8282 --p
 ### Update a provider
 
 ```bash
-yarn start provider_update --fee=10 --serviceOrigin=https://localhost:8282 --payee=Provider --address ADDRESS
+yarn provider provider_update --fee=10 --serviceOrigin=https://localhost:8282 --payee=Provider --address ADDRESS
 ```
 
 Params are the same as `provider_register`
@@ -97,7 +97,7 @@ Params are the same as `provider_register`
 ### Add a dataset for a Provider
 
 ```bash
-yarn start provider_add_data_set --file /usr/src/data/captchas.json
+yarn provider provider_add_data_set --file /usr/src/data/captchas.json
 ```
 
 | Param | Description |
@@ -109,7 +109,7 @@ File format can be viewed [here](https://github.com/prosopo-io/provider/blob/mas
 ### De-register a Provider
 
 ```bash
-yarn start provider_deregister --address ADDRESS
+yarn provider provider_deregister --address ADDRESS
 ```
 
 | Param | Description |
@@ -119,7 +119,7 @@ yarn start provider_deregister --address ADDRESS
 ### Unstake funds
 
 ```bash
-yarn start provider_unstake --value VALUE
+yarn provider provider_unstake --value VALUE
 ```
 
 | Param | Description |
@@ -129,7 +129,7 @@ yarn start provider_unstake --value VALUE
 ### List Provider accounts in contract
 
 ```bash
-yarn start provider_accounts
+yarn provider provider_accounts
 ```
 
 
@@ -139,7 +139,7 @@ yarn start provider_accounts
 Run the API server
 
 ```bash
-yarn start --api
+yarn start
 ```
 
 The API contains functions that will be required for the frontend captcha interface.

@@ -115,7 +115,23 @@ build/
 
 secrets.json
 .env
+.env.*
+.env-*
+!.env.contract.*
 
 # Ingnore build target
 contracts/target/
 
+/db/
+/data/
+
+/yarn.lock
+package-lock.json
+
+/.chain-test/
+/.db-test/
+
+/database_accounts.json
+/.database_accounts.json
+
+chain-data
