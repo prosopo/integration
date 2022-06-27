@@ -21,29 +21,33 @@ Integrates prosopo repositories in a development environment
 git clone git@github.com:prosopo-io/integration.git
 ````
 
-## Make Setup
+
+
+## Development Environment Setup
+
+### Make Setup
 
 Start by pulling submodules and then updating them
 
 `make setup && npm run git-sync`
 
-## Make Dev
+Follow each of the below steps.
 
-Deploy the [protocol](https://github.com/prosopo-io/protocol/) contract and [dapp-example](https://github.com/prosopo-io/dapp-example) contract to a local substrate node using the following command.
+### Setup containers and environment
+
+Setup your integration environment and environment variables by running this from the root of the integration repository.
 
 ```bash
-make dev deploy-protocol deploy-dapp
+make dev
 ```
 
 This does the following:
 
-1. Pulls and starts a substrate node container.
+1. Pulls and starts a substrate node container containing pre-deployed [protocol](https://github.com/prosopo-io/protocol/), [dapp-example](https://github.com/prosopo-io/dapp-example), and [demo-nft-marketplace](https://github.com/prosopo-io/demo-nft-marketplace) contracts.
 2. Pulls and starts up a mongodb container.
-3. Pulls a contract build and deploy container for protocol and deploys the contract to the substrate node. The contract account is stored in `.env.protocol`.
-4. Pulls a contract build and deploy container for dapp-example and deploys the contract to the substrate node. The contract account is stored in `.env.dapp`.
-5. Creates a new `.env` file from `env.txt` and places the two contract addresses in this new `.env` file.
+3. Creates a new `.env` file from `env.txt` and places the two contract addresses in this new `.env` file.
 
-### Flags
+#### Make Dev Flags
 
 The following flags are optional
 
@@ -52,10 +56,8 @@ The following flags are optional
 | `restart-chain`   | Restart the substrate container, deleting any data that was added to contracts |
 | `test-db`         | Start substrate container and the database container with test dbs             |
 
-## Development Environment Setup
-
 ### Debugging and Testing
-To bebug a frontend dapp, register a provider and a dapp in the [protocol](https://github.com/prosopo-io/protocol/) contract. The steps to achieve this are as follows:
+To debug a frontend dapp, register a provider and a dapp in the [protocol](https://github.com/prosopo-io/protocol/) contract. This can be achieved by running the following command from the root of the integration repository.
 
 ```bash
 npm run setup
