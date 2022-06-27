@@ -22,9 +22,9 @@
     "test": "npm -w @prosopo/provider run test",
     "lint": "npm -w @prosopo/provider run eslint --fix src && npm -w @prosopo/contract run eslint --fix src",
     "populate-data": "npm -w @prosopo/provider run populate-data",
-    "git-sync": "git submodule foreach -q --recursive 'git switch $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo master)'",
-    "git-dev": "git submodule foreach -q --recursive 'git switch 'develop'",
-    "git-branch": "git submodule foreach -q --recursive 'git switch '$BRANCH'"
+    "git-sync": "git submodule foreach -q --recursive 'echo $sm_path && git switch $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo master)'",
+    "git-dev": "git submodule foreach -q --recursive 'echo $sm_path && git switch $(echo 'develop')'",
+    "git-branch": "git submodule foreach -q --recursive 'echo $sm_path && git switch $(echo '$BRANCH')"
   },
   "private": true,
   "engines": {
