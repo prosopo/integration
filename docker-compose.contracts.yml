@@ -1,0 +1,83 @@
+version: '3.4'
+services:
+  protocol-build:
+    image: prosopo/protocol-build:latest
+    volumes:
+      - type: bind
+        source: ./protocol
+        target: /usr/src/protocol
+    build:
+      context: .
+      dockerfile: ./protocol/docker/contracts.protocol.dockerfile
+      args:
+        # amd64
+        BASE: paritytech
+        TAG: latest
+        ARCHITECTURE: x86_64
+
+        # arm64
+        # BASE: prosopo
+        # TAG: m1-latest
+        # ARCHITECTURE: aarch64
+    links:
+      - substrate-node
+    #command: "tail -f /dev/null"
+  dapp-build:
+    image: prosopo/dapp-build:latest
+    volumes:
+      - type: bind
+        source: ./dapp-example
+        target: /usr/src/dapp-example
+    environment:
+      - CONTRACT_ADDRESS=${CONTRACT_ADDRESS}
+    build:
+      context: .
+      dockerfile: ./dapp-example/docker/contracts.dapp.dockerfile
+      args:
+        # amd64
+        BASE: paritytech
+        TAG: latest
+        ARCHITECTURE: x86_64
+
+        # arm64
+        # BASE: prosopo
+        # TAG: m1-latest
+        # ARCHITECTURE: aarch64
+    links:
+      - substrate-node
+    #command: "tail -f /dev/null"
+  demo-build:
+    image: prosopo/demo-build:latest
+    volumes:
+      - type: bind
+        source: ./demos/demo-nft-marketplace
+        target: /usr/src/demos/demo-nft-marketplace
+    environment:
+      - CONTRACT_ADDRESS=${CONTRACT_ADDRESS}
+    build:
+      context: .
+      dockerfile: ./demos/demo-nft-marketplace/docker/contracts.demo.dockerfile
+      args:
+        # amd64
+        BASE: paritytech
+        TAG: latest
+        ARCHITECTURE: x86_64
+
+        # arm64
+        # BASE: prosopo
+        # TAG: m1-latest
+        # ARCHITECTURE: aarch64
+    links:
+      - substrate-node
+    #command: "tail -f /dev/null"
+  substrate-node:
+    image: prosopo/substrate:v1.0.0
+    volumes:
+      - ${SUBSTRATE_SHARED_VOLUME_PATH}:/substrate-contracts-node/chain-data
+    build:
+      context: ./docker/
+      dockerfile: Substrate.dockerfile
+    ports:
+      - "9615:9615"
+      - "9944:9944"
+      - "9933:9933"

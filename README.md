@@ -18,7 +18,7 @@ Start by pulling submodules using
 Create the dev docker containers using `make dev`
 
 ```bash
-make dev install build-provider deploy-protocol deploy-dapp build-redspot
+make dev install build-provider deploy-protocol deploy-dapp deploy-demo
 ```
 
 `make dev` will always perform the following tasks:
