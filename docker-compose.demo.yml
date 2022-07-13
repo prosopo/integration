@@ -1,17 +1,28 @@
-version: '3.4'
+x-aws-loadbalancer: arn:aws:elasticloadbalancing:eu-west-1:333775583992:loadbalancer/app/integration-alb/6421133a968a8296
+version: '3.8'
 services:
   substrate-node:
     image: prosopo/substrate:demo-v1.0.0
     ports:
-      - "9615:9615"
-      - "9944:9944"
-      - "9933:9933"
+      - target: 9615
+        published: 9615
+        x-aws-protocol: http
+      - target: 9944
+        published: 9944
+        x-aws-protocol: http
+      - target: 9933
+        published: 9933
+        x-aws-protocol: http
     deploy:
       replicas: 1
   provider:
-    image: prosopo/provider
+    image: prosopo/provider:demo-v1.0.0
     ports:
-      - "3000:3000"
-      - "4000:4000"
+      - target: 3000
+        published: 3000
+        x-aws-protocol: http
+      - target: 4000
+        published: 4000
+        x-aws-protocol: http
     deploy:
       replicas: 1
