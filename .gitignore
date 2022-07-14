@@ -117,6 +117,7 @@ secrets.json
 .env
 .env.*
 .env-*
+!.env.contract.*
 
 # Ingnore build target
 contracts/target/
@@ -132,3 +133,5 @@ package-lock.json
 
 /database_accounts.json
 /.database_accounts.json
+
+chain-data
