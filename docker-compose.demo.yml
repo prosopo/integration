@@ -30,18 +30,24 @@ services:
   #     replicas: 1
 
 # x-aws-loadbalancer: arn:aws:elasticloadbalancing:eu-west-1:333775583992:loadbalancer/app/integration-alb/6421133a968a8296
-
+x-aws-vpc: vpc-0d475f14c1385d682
 x-aws-cloudformation:
   Resources:
+    # CloudMap:
+    #   Properties:
+    #     Description: Service Map for Docker Compose project integration
+    #     Name: integration.local
+    #     # Vpc: vpc-0d475f14c1385d682
+    #   Type: AWS::ServiceDiscovery::PublicDnsNamespace
     SubstrateTCP9944Listener:
       Properties:
         Certificates:
-          - CertificateArn: "arn:aws:acm:eu-west-1:333775583992:certificate/b9099bff-e89c-4393-a304-6686ca21be48"
+          - CertificateArn: "arn:aws:acm:eu-west-1:333775583992:certificate/4566efed-fb66-498b-82d0-73be97a42191"
         Protocol: TLS
         Port: 9944
     SubstrateTCP9933Listener:
       Properties:
         Certificates:
-          - CertificateArn: "arn:aws:acm:eu-west-1:333775583992:certificate/b9099bff-e89c-4393-a304-6686ca21be48"
+          - CertificateArn: "arn:aws:acm:eu-west-1:333775583992:certificate/4566efed-fb66-498b-82d0-73be97a42191"
         Protocol: TLS
         Port: 9933
