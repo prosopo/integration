@@ -1,28 +1,47 @@
-x-aws-loadbalancer: arn:aws:elasticloadbalancing:eu-west-1:333775583992:loadbalancer/app/integration-alb/6421133a968a8296
+# https://docs.docker.com/cloud/ecs-integration/
+
 version: '3.8'
 services:
-  substrate-node:
+  substrate:
     image: prosopo/substrate:demo-v1.0.0
     ports:
-      - target: 9615
-        published: 9615
-        x-aws-protocol: http
-      - target: 9944
-        published: 9944
-        x-aws-protocol: http
-      - target: 9933
-        published: 9933
-        x-aws-protocol: http
+      - "9615:9615"
+      - "9944:9944"
+      - "9933:9933"
     deploy:
       replicas: 1
-  provider:
-    image: prosopo/provider:demo-v1.0.0
+  database:
+    image: mongo:5.0.4
     ports:
-      - target: 3000
-        published: 3000
-        x-aws-protocol: http
-      - target: 4000
-        published: 4000
-        x-aws-protocol: http
-    deploy:
-      replicas: 1
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_DATABASE=prosopo
+  # provider:
+  #   image: prosopo/provider:demo-v1.0.0
+  #   ports:
+  #     - "3000:3000"
+  #     - "4000:4000"
+  #   depends_on:
+  #     - substrate-node
+  #     - provider-db
+  #   deploy:
+  #     replicas: 1
+
+# x-aws-loadbalancer: arn:aws:elasticloadbalancing:eu-west-1:333775583992:loadbalancer/app/integration-alb/6421133a968a8296
+
+x-aws-cloudformation:
+  Resources:
+    SubstrateTCP9944Listener:
+      Properties:
+        Certificates:
+          - CertificateArn: "arn:aws:acm:eu-west-1:333775583992:certificate/b9099bff-e89c-4393-a304-6686ca21be48"
+        Protocol: TLS
+        Port: 9944
+    SubstrateTCP9933Listener:
+      Properties:
+        Certificates:
+          - CertificateArn: "arn:aws:acm:eu-west-1:333775583992:certificate/b9099bff-e89c-4393-a304-6686ca21be48"
+        Protocol: TLS
+        Port: 9933
