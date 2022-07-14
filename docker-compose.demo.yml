@@ -33,12 +33,6 @@ x-aws-vpc: vpc-0d475f14c1385d682
 x-aws-loadbalancer: arn:aws:elasticloadbalancing:eu-west-1:333775583992:loadbalancer/net/demo-net/c964b999910c2e7d
 x-aws-cloudformation:
   Resources:
-    # CloudMap:
-    #   Properties:
-    #     Description: Service Map for Docker Compose project integration
-    #     Name: integration.local
-    #     # Vpc: vpc-0d475f14c1385d682
-    #   Type: AWS::ServiceDiscovery::PublicDnsNamespace
     SubstrateTCP9944Listener:
       Properties:
         Certificates:
