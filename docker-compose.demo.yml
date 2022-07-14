@@ -29,8 +29,8 @@ services:
   #   deploy:
   #     replicas: 1
 
-# x-aws-loadbalancer: arn:aws:elasticloadbalancing:eu-west-1:333775583992:loadbalancer/app/integration-alb/6421133a968a8296
 x-aws-vpc: vpc-0d475f14c1385d682
+x-aws-loadbalancer: arn:aws:elasticloadbalancing:eu-west-1:333775583992:loadbalancer/net/demo-net/c964b999910c2e7d
 x-aws-cloudformation:
   Resources:
     # CloudMap:
