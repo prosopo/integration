@@ -18,16 +18,19 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root
       - MONGO_INITDB_DATABASE=prosopo
-  # provider:
-  #   image: prosopo/provider:demo-v1.0.0
-  #   ports:
-  #     - "3000:3000"
-  #     - "4000:4000"
-  #   depends_on:
-  #     - substrate-node
-  #     - provider-db
-  #   deploy:
-  #     replicas: 1
+    deploy:
+      replicas: 1
+  provider:
+    image: prosopo/provider:demo-v1.0.4
+    environment:
+      - NODE_ENV=demo
+    ports:
+      - "3000:3000"
+    depends_on:
+      - substrate
+      - database
+    deploy:
+      replicas: 1
 
 x-aws-vpc: vpc-0d475f14c1385d682
 x-aws-loadbalancer: arn:aws:elasticloadbalancing:eu-west-1:333775583992:loadbalancer/net/demo-net/c964b999910c2e7d
@@ -45,3 +48,9 @@ x-aws-cloudformation:
           - CertificateArn: "arn:aws:acm:eu-west-1:333775583992:certificate/4566efed-fb66-498b-82d0-73be97a42191"
         Protocol: TLS
         Port: 9933
+    ProviderTCP3000Listener:
+      Properties:
+        Certificates:
+          - CertificateArn: "arn:aws:acm:eu-west-1:333775583992:certificate/4566efed-fb66-498b-82d0-73be97a42191"
+        Protocol: TLS
+        Port: 3000
