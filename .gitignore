@@ -117,6 +117,7 @@ secrets.json
 .env
 # .env.*
 .env-*
+!.env.contract.*
 
 # Ingnore build target
 contracts/target/
