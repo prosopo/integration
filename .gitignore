@@ -115,7 +115,7 @@ build/
 
 secrets.json
 .env
-.env.*
+# .env.*
 .env-*
 !.env.contract.*
 

@@ -1,9 +1,9 @@
 version: '3.4'
 services:
   provider-db:
-    image: ${DATABASE_IMAGE}
+    image: mongo:5.0.4
     volumes:
-      - ${DATABASE_SHARED_VOLUME_PATH}:/data/db
+      - ./db:/data/db
     ports:
       - "27017:27017"
     environment:
