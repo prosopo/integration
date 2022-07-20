@@ -20,7 +20,7 @@ services:
       - "27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
       - MONGO_INITDB_DATABASE=prosopo
     deploy:
       replicas: 1
@@ -29,9 +29,10 @@ services:
           cpus: '1'
           memory: 512M
   provider:
-    image: prosopo/provider:demo-v1.0.7
+    image: prosopo/provider:demo-v1.0.10
     environment:
-      - NODE_ENV=demo
+      - NODE_ENV=$NODE_ENV
+      - DATABASE_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
     ports:
       - "3000:3000"
     depends_on:
