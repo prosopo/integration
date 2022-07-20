@@ -29,7 +29,7 @@ services:
           cpus: '1'
           memory: 512M
   provider:
-    image: prosopo/provider:demo-v1.0.6
+    image: prosopo/provider:demo-v1.0.7
     environment:
       - NODE_ENV=demo
     ports:
