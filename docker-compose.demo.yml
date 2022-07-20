@@ -29,10 +29,19 @@ services:
           cpus: '1'
           memory: 512M
   provider:
-    image: prosopo/provider:demo-v1.0.10
+    image: prosopo/provider:v1.0.1
     environment:
       - NODE_ENV=$NODE_ENV
       - DATABASE_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
+      - DAPP_CONTRACT_ADDRESS=5Go2hCf1WHzKqt1HGCUwhKfUS85477HUHgvaKkMJRYBfyiUP
+      - CONTRACT_ADDRESS=5FZqX1C6HYzcH7zB56VB7PYD9zwRtYkNpWDsbS7VsXjh3cDS
+      - DATABASE_USERNAME=root
+      - DATABASE_NAME=prosopo
+      - DATABASE_PORT=27017
+      - DATABASE_HOST=database
+      - API_BASE_URL=http://provider:3000
+      - SUBSTRATE_NODE_URL=ws://substrate:9944
+      - API_SRV_PORT=3000
     ports:
       - "3000:3000"
     depends_on:
