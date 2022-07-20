@@ -28,23 +28,6 @@ services:
         limits:
           cpus: '1'
           memory: 512M
-  provider:
-    image: prosopo/provider:v1.0.2
-    environment:
-      - NODE_ENV=production
-      - DATABASE_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
-      - DAPP_CONTRACT_ADDRESS=5Go2hCf1WHzKqt1HGCUwhKfUS85477HUHgvaKkMJRYBfyiUP
-    ports:
-      - "3000:3000"
-    depends_on:
-      - substrate
-      - database
-    deploy:
-      # replicas: 1
-      resources:
-        limits:
-          cpus: '1'
-          memory: 512M
 
 # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data-secrets.html
 # secrets:
