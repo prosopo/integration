@@ -1,5 +1,4 @@
 # https://docs.docker.com/cloud/ecs-integration/
-
 version: '3.8'
 services:
   substrate:
@@ -29,7 +28,7 @@ services:
           cpus: '1'
           memory: 512M
   provider:
-    image: prosopo/provider:v1.0.2
+    image: prosopo/provider:1.0.3
     environment:
       - NODE_ENV=production
       - DATABASE_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
