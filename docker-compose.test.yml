@@ -1,9 +1,14 @@
-version: '3.4'
+version: '3.8'
 services:
-  substrate-test-node:
-    image: prosopo/substrate:test-024becb
+  substrate:
+    image: prosopo/substrate:demo-v1.0.0
     ports:
-      - "19615:9615"
-      - "19944:9944"
-      - "19933:9933"
-    command: [ "substrate-contracts-node", "--dev", "-d", "./chain-data", "--unsafe-ws-external", "--rpc-external", "-lerror,runtime::contracts=debug" ]
+      - "9615:9615"
+      - "9944:9944"
+      - "9933:9933"
+    deploy:
+      # replicas: 1
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
