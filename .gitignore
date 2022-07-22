@@ -114,10 +114,7 @@ build/
 /.yarn/install-state.gz
 
 secrets.json
-.env
-.env.*
-.env-*
-!.env.contract.*
+.env*
 
 # Ingnore build target
 contracts/target/

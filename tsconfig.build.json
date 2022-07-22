@@ -10,7 +10,6 @@
 
     "composite": true,
 
-
     "allowJs": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -46,10 +45,6 @@
 
     "lib": [
       "esnext",
-    ],
-
-    // "paths": {
-    //     "@prosopo/*": ["./packages/*"]
-    // }
+    ]
   }
 }
