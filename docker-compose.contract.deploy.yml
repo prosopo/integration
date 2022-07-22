@@ -1,0 +1,35 @@
+version: '3.4'
+services:
+  deploy-contract:
+    image: paritytech/contracts-ci-linux:latest
+    build:
+      context: .
+      dockerfile: ./docker/deploy/contract.deploy.dockerfile
+      args:
+        IMAGE: paritytech/contracts-ci-linux:latest
+        ARCHITECTURE: x86_64
+    environment:
+      - CONTRACT_NAME=${CONTRACT_NAME}
+      - CONTRACT_PATH=${CONTRACT_PATH}
+      - CONTRACT_ARGS="5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY 2000000000000" # protocol
+      # - CONTRACT_ARGS= # dapp
+      - SUBSTRATE_URL="ws://substrate-node:9944"
+      - SURI=//Alice
+      - ENDOWMENT=1000000000000
+      - CONSTRUCTOR=default
+    volumes:
+      - type: bind
+        source: ${CONTRACT_PATH}/target/ink
+        target: /usr/src/${CONTRACT_NAME}
+    links:
+      - substrate-node
+    # depends_on:
+    #   - substrate-node
+  substrate-node:
+    image: prosopo/substrate-node:dev
+    ports:
+      - "9615:9615"
+      - "9944:9944"
+      - "9933:9933"
+    volumes:
+      - ./chain-data:/chain-data
