@@ -60,9 +60,7 @@ npm i && npm run build
 Providers are the nodes in the network that supply CATPCHA. Run the following command from the root of the integration repository to register a Provider and a Dapp in the Protocol contract and start the Provider API.
 
 ```bash
-cd packages/provider && \
-npm run setup && \
-npm run start
+npm run setup && npm run start
 ```
 
 You can simply run `npm run start` on subsequent runs.
