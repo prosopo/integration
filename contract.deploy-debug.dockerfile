@@ -28,6 +28,6 @@ ENV CONSTRUCTOR "default"
 
 # RUN cargo metadata --format-version 1 --manifest-path=Cargo.toml
 
-WORKDIR /usr/src/protocol/contracts
+WORKDIR /usr/src/protocol
 
-RUN cargo contract instantiate "./target/ink/prosopo.wasm" --args "$CONTRACT_ARGS" --constructor "$CONSTRUCTOR" --suri "$SURI" --value "$ENDOWMENT" --url "$SUBSTRATE_URL" --manifest-path "./Cargo.toml"
+RUN cargo contract instantiate "./contracts/target/ink/prosopo.wasm" --args "$CONTRACT_ARGS" --constructor "$CONSTRUCTOR" --suri "$SURI" --value $ENDOWMENT --url "$SUBSTRATE_URL" --manifest-path "./contracts/Cargo.toml" --verbose
