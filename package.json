@@ -19,8 +19,7 @@
     "start": "npm -w @prosopo/provider run start",
     "provider": "npm -w @prosopo/provider run cli",
     "fix-typescript-references": "utils-typescript-references",
-    "test": "npm run remove-test-container && docker compose --file docker-compose.test.yml up -d substrate-test-node && npm -w @prosopo/provider run test",
-    "remove-test-container": "CONTAINER=$(docker ps -q -f name=substrate-test-node) && docker stop $CONTAINER || true && docker rm $CONTAINER || true",
+    "test": "docker compose --file docker-compose.test.yml down || continue && docker compose --file docker-compose.test.yml up -d && npm -w @prosopo/provider run test",
     "lint": "npm -w @prosopo/provider run eslint --fix src && npm -w @prosopo/contract run eslint --fix src",
     "populate-data": "npm -w @prosopo/provider run populate-data",
     "git-sync": "git submodule foreach -q --recursive 'echo $sm_path && git switch $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo master)'",
@@ -38,9 +37,9 @@
   ],
   "devDependencies": {
     "depcheck": "^1.4.3",
-    "npm-check-updates": "^13.1.1",
+    "npm-check-updates": "^15.3.4",
     "tslib": "^2.4.0",
-    "typescript": "^4.7.3"
+    "typescript": "^4.7.4"
   },
   "description": "Integrates protocol and provider for development purposes",
   "bugs": {
