@@ -14,6 +14,4 @@ RUN apt autoremove -y && apt clean -y
 
 EXPOSE 30333 9933 9944 9615
 
-USER root
-
-CMD /usr/local/bin/substrate --dev -d ./chain-data --unsafe-ws-external --rpc-external --prometheus-external -lerror,runtime::contracts=debug
+ENTRYPOINT /usr/local/bin/substrate-contracts-node --dev -d ./chain-data --unsafe-ws-external --rpc-external --prometheus-external -lerror,runtime::contracts=debug

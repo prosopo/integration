@@ -20,7 +20,6 @@
     "provider": "npm -w @prosopo/provider run cli",
     "fix-typescript-references": "utils-typescript-references",
     "test": "npm run remove-test-container && docker compose --file docker-compose.test.yml up -d substrate-test-node && npm -w @prosopo/provider run test",
-    "remove-test-container": "CONTAINER=$(docker ps -q -f name=substrate-test-node) && docker stop $CONTAINER || true && docker rm $CONTAINER || true",
     "lint": "npm run lint --workspaces --if-present",
     "lint:fix": "npm run lint:fix --workspaces --if-present",
     "populate-data": "npm -w @prosopo/provider run populate-data",

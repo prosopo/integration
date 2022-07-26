@@ -60,9 +60,7 @@ npm i && npm run build
 Providers are the nodes in the network that supply CATPCHA. Run the following command from the root of the integration repository to register a Provider and a Dapp in the Protocol contract and start the Provider API.
 
 ```bash
-cd packages/provider && \
-npm run setup && \
-npm run start
+npm run setup && npm run start
 ```
 
 You can simply run `npm run start` on subsequent runs.
@@ -83,15 +81,16 @@ You can now start one of the frontend demos to begin receiving CAPTCHA challenge
 
 ### Running Tests
 
-Set up the test environment by running the following command from the root of the integration repository.
+Stop your development environment, if it is running.
 
 ```bash
-docker compose --file docker-compose.test.yml up -d
+docker compose --file docker-compose.development.yml down
 ```
 
-Then run the tests from the provider repository.
+Set up the test environment and run the tests by running the following command from the root of the integration repository.
 
 ```bash
-cd packages/provider && \
-npm run test`
+npm run test
 ```
+
+This will create a test docker environment, register a test Provider, and create a test `env` file before running the tests in [provider](https://github.com/prosopo-io/provider).
