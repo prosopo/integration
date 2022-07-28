@@ -10,10 +10,6 @@
 	path = packages/procaptcha
 	url = git@github.com:prosopo-io/procaptcha.git
     branch = main
-[submodule "redspot"]
-	path = redspot
-	url = git@github.com:prosopo-io/redspot.git
-    branch = main
 [submodule "packages/provider"]
 	path = packages/provider
 	url = git@github.com:prosopo-io/provider.git
