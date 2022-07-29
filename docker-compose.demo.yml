@@ -31,8 +31,8 @@ services:
     image: prosopo/provider:1.0.3
     environment:
       - NODE_ENV=production
-      - DATABASE_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
       - DAPP_CONTRACT_ADDRESS=5Go2hCf1WHzKqt1HGCUwhKfUS85477HUHgvaKkMJRYBfyiUP
+      - DATABASE_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
     ports:
       - "3000:3000"
     depends_on:

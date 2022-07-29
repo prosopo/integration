@@ -20,10 +20,10 @@
     "provider": "npm -w @prosopo/provider run cli",
     "fix-typescript-references": "utils-typescript-references",
     "test": "npm run remove-test-container && docker compose --file docker-compose.test.yml up -d substrate-test-node && npm -w @prosopo/provider run test",
-    "remove-test-container": "CONTAINER=$(docker ps -q -f name=substrate-test-node) && docker stop $CONTAINER || true && docker rm $CONTAINER || true",
-    "lint": "npm -w @prosopo/provider run eslint --fix src && npm -w @prosopo/contract run eslint --fix src",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
     "populate-data": "npm -w @prosopo/provider run populate-data",
-    "git-sync": "git submodule foreach -q --recursive 'echo $sm_path && git switch $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo master)'",
+    "git-sync": "git submodule foreach -q --recursive 'echo $sm_path && git switch $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo main)'",
     "git-dev": "git submodule foreach -q --recursive 'echo $sm_path && git switch $(echo 'develop')'",
     "git-branch": "git submodule foreach -q --recursive 'echo $sm_path && git switch $(echo '$BRANCH')"
   },
