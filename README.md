@@ -90,7 +90,7 @@ docker compose --file docker-compose.development.yml down
 Set up the test environment and run the tests by running the following command from the root of the integration repository.
 
 ```bash
-npm run test
+cp packages/provider/env.test packages/provider/.env.test && NODE_ENV=test npm run test
 ```
 
 This will create a test docker environment, register a test Provider, and create a test `env` file before running the tests in [provider](https://github.com/prosopo-io/provider).
