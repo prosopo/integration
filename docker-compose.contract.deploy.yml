@@ -8,21 +8,25 @@ services:
       args:
         IMAGE: paritytech/contracts-ci-linux:latest
         ARCHITECTURE: x86_64
+        CONTRACT_NAME: ${CONTRACT_NAME}
+    working_dir: /usr/src/$CONTRACT_NAME/contracts
     environment:
       - CONTRACT_NAME=${CONTRACT_NAME}
       - CONTRACT_PATH=${CONTRACT_PATH}
-      - CONTRACT_ARGS="5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY 2000000000000" # protocol
+      - CONTRACT_ARGS=${CONTRACT_ARGS} # protocol
       # - CONTRACT_ARGS= # dapp
-      - SUBSTRATE_URL="ws://substrate-node:9944"
+      - SUBSTRATE_URL=ws://substrate-node:9944
       - SURI=//Alice
       - ENDOWMENT=1000000000000
       - CONSTRUCTOR=default
     volumes:
       - type: bind
-        source: ${CONTRACT_PATH}/target/ink
+        source: ${CONTRACT_PATH}
         target: /usr/src/${CONTRACT_NAME}
     links:
       - substrate-node
+    command: cargo contract instantiate "/usr/src/$CONTRACT_NAME/contracts/target/ink/$CONTRACT_NAME.wasm" --args $CONTRACT_ARGS --constructor "$CONSTRUCTOR" --suri "$SURI" --value "$ENDOWMENT" --url "$SUBSTRATE_URL"
+    #command: tail -f /dev/null
     # depends_on:
     #   - substrate-node
   substrate-node:
