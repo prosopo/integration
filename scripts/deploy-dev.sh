@@ -117,9 +117,9 @@ if [[ $DEPLOY_DEMO == true ]]; then
 fi
 
 # Put the new contract addresses in a new .env file based on a template .env.txt
-PROTOCOL_CONTRACT_ADDRESS=$(echo "$(<$ENV_FILE.contract.protocol)" | cut -d '=' -f2) || false
-DAPP_CONTRACT_ADDRESS=$(echo "$(<$ENV_FILE.contract.dapp)" | cut -d '=' -f2) || false
-DEMO_CONTRACT_ADDRESS=$(echo "$(<$ENV_FILE.contract.demo)" | cut -d '=' -f2) || false
+PROTOCOL_CONTRACT_ADDRESS=$(echo "$(<$ENV_FILE.protocol)" | cut -d '=' -f2) || false
+DAPP_CONTRACT_ADDRESS=$(echo "$(<$ENV_FILE.dapp)" | cut -d '=' -f2) || false
+DEMO_CONTRACT_ADDRESS=$(echo "$(<$ENV_FILE.demo)" | cut -d '=' -f2) || false
 echo "PROTOCOL_CONTRACT_ADDRESS $PROTOCOL_CONTRACT_ADDRESS"
 echo "DAPP_CONTRACT_ADDRESS     $DAPP_CONTRACT_ADDRESS"
 echo "DEMO_CONTRACT_ADDRESS     $DEMO_CONTRACT_ADDRESS"
