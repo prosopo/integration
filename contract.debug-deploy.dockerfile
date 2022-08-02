@@ -6,11 +6,11 @@ COPY protocol protocol/
 
 ENV CONTRACT_NAME protocol
 ENV CONTRACT_PATH "protocol/contracts"
-ENV CONTRACT_ARGS "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY 2000000000000"
+ENV CONTRACT_ARGS "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY 1000000000000"
 # - CONTRACT_ARGS= # dapp
 ENV SUBSTRATE_URL "ws://localhost:9944"
 ENV SURI "//Alice"
-ENV ENDOWMENT 1000000000000
+ENV ENDOWMENT 2000000000000
 ENV CONSTRUCTOR "default"
 
 # RUN cat /usr/src/protocol/contracts/Cargo.toml
@@ -28,6 +28,8 @@ ENV CONSTRUCTOR "default"
 
 # RUN cargo metadata --format-version 1 --manifest-path=Cargo.toml
 
-WORKDIR /usr/src/protocol
+WORKDIR /usr/src/protocol/contracts
 
-RUN cargo contract instantiate "./contracts/target/ink/prosopo.wasm" --args "$CONTRACT_ARGS" --constructor "$CONSTRUCTOR" --suri "$SURI" --value $ENDOWMENT --url "$SUBSTRATE_URL" --manifest-path "./contracts/Cargo.toml" --verbose
+RUN cargo contract instantiate "./target/ink/prosopo.wasm" --args $CONTRACT_ARGS --constructor "$CONSTRUCTOR" --suri "$SURI" --value $ENDOWMENT --url "$SUBSTRATE_URL" --manifest-path "./Cargo.toml" --verbose
+
+# RUN cargo contract instantiate "./target/ink/prosopo.wasm" --args "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY" "1000000000000" --constructor "default" --suri "//Alice" --value "2000000000000" --salt 0x9286 --verbose  

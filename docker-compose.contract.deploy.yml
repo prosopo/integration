@@ -11,11 +11,11 @@ services:
     environment:
       - CONTRACT_NAME=${CONTRACT_NAME}
       - CONTRACT_PATH=${CONTRACT_PATH}
-      - CONTRACT_ARGS="5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY 2000000000000" # protocol
+      - CONTRACT_ARGS="5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY 1000000000000" # protocol
       # - CONTRACT_ARGS= # dapp
       - SUBSTRATE_URL="ws://substrate-node:9944"
       - SURI=//Alice
-      - ENDOWMENT=1000000000000
+      - ENDOWMENT=2000000000000
       - CONSTRUCTOR=default
     volumes:
       - type: bind
