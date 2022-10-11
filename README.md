@@ -1,14 +1,14 @@
 # Integration
 Integrates prosopo repositories in a development environment
 
-- [protocol](https://github.com/prosopo-io/protocol/)
-- [provider](https://github.com/prosopo-io/provider)
-- [contract](https://github.com/prosopo-io/contract)
-- [procaptcha](https://github.com/prosopo-io/procaptcha)
-- [procaptcha-react](https://github.com/prosopo-io/procaptcha-react)
-- [client-example](https://github.com/prosopo-io/client-example)
-- [demo-nft-marketplace](https://github.com/prosopo-io/demo-nft-marketplace)
-- [dapp-example](https://github.com/prosopo-io/dapp-example)
+- [protocol](https://github.com/prosopo/protocol/)
+- [provider](https://github.com/prosopo/provider)
+- [contract](https://github.com/prosopo/contract)
+- [procaptcha](https://github.com/prosopo/procaptcha)
+- [procaptcha-react](https://github.com/prosopo/procaptcha-react)
+- [client-example](https://github.com/prosopo/client-example)
+- [demo-nft-marketplace](https://github.com/prosopo/demo-nft-marketplace)
+- [dapp-example](https://github.com/prosopo/dapp-example)
 
 # Prerequisites
 - ability to run bash scripts
@@ -18,7 +18,7 @@ Integrates prosopo repositories in a development environment
 # Usage
 
 ```bash
-git clone git@github.com:prosopo-io/integration.git
+git clone git@github.com:prosopo/integration.git
 ````
 
 ## Development Environment Set Up
@@ -44,7 +44,7 @@ docker compose --file docker-compose.development.yml up -d
 
 This does the following:
 
-1. Pulls and starts a substrate node container containing pre-deployed [protocol](https://github.com/prosopo-io/protocol/), [dapp-example](https://github.com/prosopo-io/dapp-example), and [demo-nft-marketplace](https://github.com/prosopo-io/demo-nft-marketplace) contracts.
+1. Pulls and starts a substrate node container containing pre-deployed [protocol](https://github.com/prosopo/protocol/), [dapp-example](https://github.com/prosopo/dapp-example), and [demo-nft-marketplace](https://github.com/prosopo/demo-nft-marketplace) contracts.
 2. Pulls and starts up a mongodb container.
 
 ### Install node modules
@@ -75,8 +75,8 @@ You can simply run `npm run start` on subsequent runs.
 
 You can now start one of the frontend demos to begin receiving CAPTCHA challenges in the browser. See the READMEs in each of the demos for information on how to run them.
 
-- [demo-nft-marketplace](https://github.com/prosopo-io/demo-nft-marketplace) (full marketplace)
-- [client-example](https://github.com/prosopo-io/client-example) (minimal implementation)
+- [demo-nft-marketplace](https://github.com/prosopo/demo-nft-marketplace) (full marketplace)
+- [client-example](https://github.com/prosopo/client-example) (minimal implementation)
 
 
 ### Running Tests
@@ -93,4 +93,4 @@ Set up the test environment and run the tests by running the following command f
 npm run test
 ```
 
-This will create a test docker environment, register a test Provider, and create a test `env` file before running the tests in [provider](https://github.com/prosopo-io/provider).
+This will create a test docker environment, register a test Provider, and create a test `env` file before running the tests in [provider](https://github.com/prosopo/provider).

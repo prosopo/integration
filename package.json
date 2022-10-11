@@ -5,7 +5,7 @@
   "author": "Prosopo",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/prosopo-io/integration.git"
+    "url": "git+https://github.com/prosopo/integration.git"
   },
   "scripts": {
     "clean": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' + && find . -name \"dist\" -type d -prune -exec rm -rf '{}' + && find . -name \"package-lock.json\" -type f -delete",
@@ -24,7 +24,7 @@
     "lint:fix": "npm run lint:fix --workspaces --if-present",
     "populate-data": "npm -w @prosopo/provider run populate-data",
     "git-sync": "git submodule foreach -q --recursive 'echo $sm_path && git switch $(git config -f $toplevel/.gitmodules submodule.$name.branch || echo main)'",
-    "git-dev": "git submodule foreach -q --recursive 'echo $sm_path && git switch $(echo 'develop')'",
+    "git-dev": "git submodule foreach -q --recursive 'echo $sm_path && git switch $(echo 'develop') && git pull'",
     "git-branch": "git submodule foreach -q --recursive 'echo $sm_path && git switch $(echo '$BRANCH')"
   },
   "private": true,
@@ -44,9 +44,9 @@
   },
   "description": "Integrates protocol and provider for development purposes",
   "bugs": {
-    "url": "https://github.com/prosopo-io/integration/issues"
+    "url": "https://github.com/prosopo/integration/issues"
   },
-  "homepage": "https://github.com/prosopo-io/integration#readme",
+  "homepage": "https://github.com/prosopo/integration#readme",
   "keywords": [],
   "license": "ISC"
 }
