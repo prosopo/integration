@@ -1,6 +1,6 @@
 FROM debian:stable-slim
 
-RUN apt-get update && apt install -y curl
+RUN apt-get update && apt install -y curl protobuf-compiler
 
 RUN curl -sL https://github.com/paritytech/substrate-contracts-node/releases/download/v0.17.0/substrate-contracts-node-linux.tar.gz -o /root/substrate-contracts-node-linux.tar.gz
 

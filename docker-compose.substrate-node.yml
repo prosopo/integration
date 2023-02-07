@@ -8,3 +8,7 @@ services:
       - "9933:9933"
     volumes:
       - ./chain-data:/chain-data
+    build:
+      context: ./docker/images
+      dockerfile: substrate-node.build.dockerfile
+
